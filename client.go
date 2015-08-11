@@ -40,6 +40,15 @@ func client(args []string) {
 			},
 		},
 		{
+			Name:        "bootstrap",
+			Usage:       "devenv bootstrap",
+			Description: "List the available environments",
+			Action: func(c *cli.Context) {
+				out := api.Bootstrap()
+				fmt.Println(out)
+			},
+		},
+		{
 			Name:        "pull",
 			Usage:       "devenv pull http://github.com/buckhx/denv",
 			Description: "Pull from the remote devenv",
