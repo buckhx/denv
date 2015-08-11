@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/buckhx/devenv/api"
+	"github.com/buckhx/denv/api"
 	"github.com/codegangsta/cli"
 )
 
