@@ -6,14 +6,14 @@ import (
 )
 
 func Activate(env string) []string {
+	Info.Denv = env
+	Info.Flush()
 	return []string{}
 }
 
 func Bootstrap() []string {
-	if pathExists(Settings.Denv.Path) {
+	if !pathExists(Settings.Denv.Path) {
 		_ = os.MkdirAll(Settings.Denv.Path, 0744)
-	} else {
-		return []string{"Already Bootstrapped " + Settings.Denv.Path}
 	}
 	return []string{"Created " + Settings.Denv.Path}
 }
@@ -34,10 +34,14 @@ func List() []string {
 }
 
 func Which() []string {
-	return []string{"WHICHI"}
+	return []string{Info.Denv}
 }
 
 func pathExists(path string) bool {
 	_, err := os.Stat(Settings.Denv.Path)
-	return os.IsNotExist(err)
+	if err == nil {
+		return true
+	} else {
+		return os.IsNotExist(err)
+	}
 }
