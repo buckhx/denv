@@ -25,8 +25,25 @@ func client(args []string) {
 			Before:      argsRequired,
 			Action: func(c *cli.Context) {
 				env := c.Args().First()
-				api.Activate(env)
-				fmt.Printf("Activated %s \n", env)
+				denv, err := api.Activate(env)
+				if err != nil {
+					fmt.Printf("%q does not exist", env)
+				}
+				fmt.Printf("Activated %s \n", denv.Name())
+			},
+		},
+		{
+			Name:        "deactivate",
+			Aliases:     []string{"d"},
+			Usage:       "Deactivate the current environment",
+			Description: "",
+			Action: func(c *cli.Context) {
+				undenv := api.Deactivate()
+				if undenv != nil {
+					fmt.Printf("Deactivated %s\n", undenv.Name())
+				} else {
+					fmt.Printf("No denv was active")
+				}
 			},
 		},
 		{
@@ -35,17 +52,9 @@ func client(args []string) {
 			Usage:       "devenv ls",
 			Description: "List the available environments",
 			Action: func(c *cli.Context) {
-				out := api.List()
-				fmt.Println(out)
-			},
-		},
-		{
-			Name:        "bootstrap",
-			Usage:       "devenv bootstrap",
-			Description: "List the available environments",
-			Action: func(c *cli.Context) {
-				out := api.Bootstrap()
-				fmt.Println(out)
+				for denv := range api.List() {
+					fmt.Println(denv.Name())
+				}
 			},
 		},
 		{
@@ -74,8 +83,13 @@ func client(args []string) {
 			Usage:       "devenv w",
 			Description: "Which environemnt is currently activated",
 			Action: func(c *cli.Context) {
-				out := api.Which()
-				fmt.Println(out)
+				denv := api.Which()
+				// TODO maybe invert this logic?
+				if denv != nil {
+					fmt.Println(denv.Name())
+				} else {
+					fmt.Println("No denv is active")
+				}
 			},
 		},
 	}

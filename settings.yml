@@ -1,3 +1,2 @@
-denv:
-    path: ~/.denv
-    info: .denvinfo
+path: ~/.denv
+infofile: .denvinfo

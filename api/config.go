@@ -9,10 +9,8 @@ import (
 )
 
 type Config struct {
-	Denv struct {
-		Path string
-		Info string
-	}
+	Path     string
+	InfoFile string
 }
 
 var Settings Config
@@ -27,7 +25,7 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	Settings.Denv.Path = pathExpand(Settings.Denv.Path)
+	Settings.Path = pathExpand(Settings.Path)
 }
 
 func pathExpand(path string) string {
