@@ -1,4 +1,4 @@
-# devenv
+# denv
 
 Installs a way to manage your development environments
 

@@ -2,6 +2,7 @@ package api
 
 import (
 	"os"
+	"path/filepath"
 )
 
 func Activate(env string) []string {
@@ -9,21 +10,34 @@ func Activate(env string) []string {
 }
 
 func Bootstrap() []string {
-	if _, err := os.Stat(Settings.Denv.Path); os.IsNotExist(err) {
-		err = os.MkdirAll(Settings.Denv.Path, 0644)
-		if err != nil {
-			panic(err)
-		}
+	if pathExists(Settings.Denv.Path) {
+		_ = os.MkdirAll(Settings.Denv.Path, 0744)
 	} else {
-		panic("Dir already exists")
+		return []string{"Already Bootstrapped " + Settings.Denv.Path}
 	}
-	return []string{}
+	return []string{"Created " + Settings.Denv.Path}
 }
 
 func List() []string {
-	return []string{"one", "two"}
+	//TODO Check is Settings.Denv.Path exists
+	denvs := []string{}
+	err := filepath.Walk(Settings.Denv.Path, func(path string, file os.FileInfo, err error) error {
+		if file.IsDir() && path != Settings.Denv.Path {
+			denvs = append(denvs, file.Name())
+		}
+		return err
+	})
+	if err != nil {
+		panic(err)
+	}
+	return denvs
 }
 
 func Which() []string {
 	return []string{"WHICHI"}
+}
+
+func pathExists(path string) bool {
+	_, err := os.Stat(Settings.Denv.Path)
+	return os.IsNotExist(err)
 }
