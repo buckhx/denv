@@ -4,7 +4,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/buckhx/pathutil"
 )
 
 func Activate(env string) (*Denv, error) {
@@ -15,16 +14,6 @@ func Activate(env string) (*Denv, error) {
 	Info.Current = denv
 	Info.Flush()
 	return denv, nil
-}
-
-//Boostrap the denv envirnoment from the settings
-//If it was already bootstrapped, nothing happens
-//Returns the path of the denv setup
-func Bootstrap() string {
-	if !pathutil.Exists(Settings.DenvHome) {
-		_ = os.MkdirAll(Settings.DenvHome, 0744)
-	}
-	return Settings.DenvHome
 }
 
 //Deactivate the current denv and restore it to the state
@@ -58,3 +47,14 @@ func List() map[*Denv]bool {
 func Which() *Denv {
 	return Info.Current
 }
+
+/*
+func Snapshot() {
+	
+}
+
+func DenvFiles() map[string]bool {
+	files = make(map[string]bool)
+	
+}
+*/

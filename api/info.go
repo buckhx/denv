@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"regexp"
+	"strings"
 
 	"github.com/buckhx/pathutil"
 )
@@ -12,6 +14,7 @@ import (
 type DenvInfo struct {
 	Current *Denv
 	Path    string
+	Ignore	map[*regexp.Regexp]bool
 }
 
 var Info DenvInfo
@@ -41,6 +44,16 @@ func (d *DenvInfo) Load() {
 	err = json.Unmarshal(content, &d)
 	if err != nil {
 		panic(err)
+	}
+	if pathutil.Exists(Settings.IgnoreFile) {
+		content, err := ioutil.ReadFile(d.Path)
+		if err != nil {
+			panic(err)
+		}
+		patterns := strings.Split(string(content), "\n")
+		for _, pattern := range patterns {
+			d.Ignore[regexp.MustCompile(pattern)] = true
+		}
 	}
 }
 
