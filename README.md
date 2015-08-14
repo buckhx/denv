@@ -1,4 +1,5 @@
 # denv
+[![Build Status](https://travis-ci.org/buckhx/denv.svg)](https://travis-ci.org/buckhx/denv)
 
 Installs a way to manage your development environments
 
