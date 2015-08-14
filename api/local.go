@@ -3,6 +3,8 @@ package api
 import (
 	"os"
 	"path/filepath"
+
+	"github.com/buckhx/pathutil"
 )
 
 func Activate(env string) (*Denv, error) {
@@ -19,7 +21,7 @@ func Activate(env string) (*Denv, error) {
 //If it was already bootstrapped, nothing happens
 //Returns the path of the denv setup
 func Bootstrap() string {
-	if !pathExists(Settings.Path) {
+	if !pathutil.Exists(Settings.Path) {
 		_ = os.MkdirAll(Settings.Path, 0744)
 	}
 	return Settings.Path
@@ -55,16 +57,4 @@ func List() map[*Denv]bool {
 
 func Which() *Denv {
 	return Info.Current
-}
-
-// Todo move these to pathlib
-func pathExists(path string) bool {
-	_, err := os.Stat(path)
-	if err == nil {
-		return true
-	}
-	if os.IsNotExist(err) {
-		return false
-	}
-	return true
 }

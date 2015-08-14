@@ -2,10 +2,10 @@ package api
 
 import (
 	"io/ioutil"
-	"os/user"
 	pathlib "path"
 
 	"gopkg.in/yaml.v2"
+	"github.com/buckhx/pathutil"
 )
 
 type Config struct {
@@ -16,7 +16,11 @@ type Config struct {
 var Settings Config
 
 func init() {
-	path := "./settings.yml"
+	path := "settings.yml"
+	if !pathutil.Exists(path) {
+		// for tests to reference correct settings
+		path = pathlib.Join("..", path)
+	}
 	config, err := ioutil.ReadFile(path)
 	if err != nil {
 		panic(err)
@@ -25,14 +29,5 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	Settings.Path = pathExpand(Settings.Path)
-}
-
-func pathExpand(path string) string {
-	if path[:2] == "~/" {
-		usr, _ := user.Current()
-		home := usr.HomeDir
-		path = pathlib.Join(home, path[2:])
-	}
-	return path
+	Settings.Path = pathutil.Expand(Settings.Path)
 }

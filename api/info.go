@@ -3,7 +3,10 @@ package api
 import (
 	"encoding/json"
 	"io/ioutil"
+	"os"
 	pathlib "path"
+
+	"github.com/buckhx/pathutil"
 )
 
 type DenvInfo struct {
@@ -52,8 +55,13 @@ func (d *DenvInfo) ToString() string {
 func init() {
 	path := pathlib.Join(Settings.Path, Settings.InfoFile)
 	Info.Path = path
-	//TODO Check basepath exists
-	if !pathExists(path) {
+	if !pathutil.Exists(Settings.Path) {
+		err := os.MkdirAll(Settings.Path, 0744)
+		if err != nil {
+			panic(err)
+		}
+	}
+	if !pathutil.Exists(path) {
 		Info.Flush()
 	}
 	Info.Load()
