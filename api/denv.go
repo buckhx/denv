@@ -31,7 +31,7 @@ func GetDenv(name string) (*Denv, error) {
 	if len(name) < 1 {
 		return nil, fmt.Errorf("Denv name can't be empty")
 	}
-	path := pathlib.Join(Settings.Path, name)
+	path := pathlib.Join(Settings.DenvHome, name)
 	if !pathutil.Exists(path) {
 		return nil, fmt.Errorf("Denv %s does not exist", name)
 	}
@@ -40,7 +40,7 @@ func GetDenv(name string) (*Denv, error) {
 
 func NewDenv(name string) *Denv {
 	d := new(Denv)
-	d.Path = pathlib.Join(Settings.Path, name)
+	d.Path = pathlib.Join(Settings.DenvHome, name)
 	if !pathutil.Exists(d.Path) {
 		err := os.MkdirAll(d.Path, 0744)
                 if err != nil {

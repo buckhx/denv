@@ -9,13 +9,15 @@ import (
 )
 
 type Config struct {
-	Path     string
+	DenvHome	string
+	IgnoreFile	string
 	InfoFile string
 }
 
 var Settings Config
 
 func init() {
+	// TODO: create a settings lib
 	path := "settings.yml"
 	if !pathutil.Exists(path) {
 		// for tests to reference correct settings
@@ -29,5 +31,16 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	Settings.Path = pathutil.Expand(Settings.Path)
+	if len(Settings.DenvHome) < 1 {
+		panic("Missing DenvHome setting")
+	}
+	Settings.DenvHome = pathutil.Expand(Settings.DenvHome)
+	if len(Settings.InfoFile) < 1 {
+		panic("Missing InfoFile setting")
+	}
+	Settings.InfoFile = pathlib.Join(Settings.DenvHome, Settings.InfoFile)
+	if len(Settings.IgnoreFile) < 1 {
+		panic("Missing IgnoreFile setting")
+	}
+	Settings.IgnoreFile = pathlib.Join(Settings.DenvHome, Settings.IgnoreFile)
 }

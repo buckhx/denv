@@ -2,9 +2,9 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"os"
-	pathlib "path"
 
 	"github.com/buckhx/pathutil"
 )
@@ -52,15 +52,26 @@ func (d *DenvInfo) ToString() string {
 	return string(content)
 }
 
-func init() {
-	path := pathlib.Join(Settings.Path, Settings.InfoFile)
-	Info.Path = path
-	if !pathutil.Exists(Settings.Path) {
-		err := os.MkdirAll(Settings.Path, 0744)
+func bootstrap() error {
+	//TODO: maybe this should live somewhere else
+	// Create DENVHOME
+	if !pathutil.Exists(Settings.DenvHome) {
+		err := os.MkdirAll(Settings.DenvHome, 0744)
 		if err != nil {
-			panic(err)
+			return err
 		}
 	}
+	// Warn DENVIGNORE
+	if !pathutil.Exists(Settings.IgnoreFile) {
+		fmt.Printf("Warning: No .denvignore file at %s, all hidden files will be managed\n", Settings.IgnoreFile)
+	}
+	return nil
+}
+
+func init() {
+	bootstrap()
+	path := Settings.InfoFile
+	Info.Path = path
 	if !pathutil.Exists(path) {
 		Info.Flush()
 	}
