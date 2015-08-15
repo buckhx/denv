@@ -3,14 +3,31 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"os"
 	pathlib "path"
+	"path/filepath"
+	"strings"
 
 	"github.com/buckhx/pathutil"
 )
 
 type Denv struct {
-	Path string
+	Path   string
+	Ignore map[string]bool
+}
+
+func (d *Denv) Ignored(path string) bool {
+	for pattern, _ := range d.Ignore {
+		ignored, err := filepath.Match(pattern, path)
+		if err != nil {
+			panic(err)
+		}
+		if ignored == true {
+			return true
+		}
+	}
+	return false
 }
 
 func (d *Denv) Name() string {
@@ -18,14 +35,30 @@ func (d *Denv) Name() string {
 }
 
 func (d *Denv) ToString() string {
-        content, err := json.Marshal(d)
-        if err != nil {
-                panic(err)
-        }
-        return string(content)
+	content, err := json.Marshal(d)
+	if err != nil {
+		panic(err)
+	}
+	return string(content)
 }
 
-//TODO: CreateDenv (flush it to disk)
+func (d *Denv) LoadIgnore() {
+	d.Ignore = make(map[string]bool)
+	path := pathlib.Join(d.Path, Settings.IgnoreFile)
+	if pathutil.Exists(path) == true {
+		content, err := ioutil.ReadFile(path)
+		if err != nil {
+			panic(err)
+		}
+		//TODO handle comments and stuff
+		patterns := strings.Split(string(content), "\n")
+		for _, pattern := range patterns {
+			d.Ignore[pattern] = true
+		}
+	} else {
+		fmt.Printf("Warning: Denv %s has no .denvignore file at %s, all hidden files will be managed\n", d.Name(), path)
+	}
+}
 
 func GetDenv(name string) (*Denv, error) {
 	if len(name) < 1 {
@@ -43,9 +76,11 @@ func NewDenv(name string) *Denv {
 	d.Path = pathlib.Join(Settings.DenvHome, name)
 	if !pathutil.Exists(d.Path) {
 		err := os.MkdirAll(d.Path, 0744)
-                if err != nil {
+		if err != nil {
 			panic(err)
 		}
+		//TODO: Bootstrap .gitignore
 	}
+	d.LoadIgnore()
 	return d
 }

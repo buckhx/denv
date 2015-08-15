@@ -4,17 +4,23 @@ import (
 	"io/ioutil"
 	pathlib "path"
 
-	"gopkg.in/yaml.v2"
 	"github.com/buckhx/pathutil"
+	"gopkg.in/yaml.v2"
 )
 
 type Config struct {
-	DenvHome	string
-	IgnoreFile	string
-	InfoFile string
+	DenvHome   string
+	IgnoreFile string
+	InfoFile   string
 }
 
 var Settings Config
+
+func check(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
 
 func init() {
 	// TODO: create a settings lib
@@ -24,13 +30,9 @@ func init() {
 		path = pathlib.Join("..", path)
 	}
 	config, err := ioutil.ReadFile(path)
-	if err != nil {
-		panic(err)
-	}
+	check(err)
 	err = yaml.Unmarshal(config, &Settings)
-	if err != nil {
-		panic(err)
-	}
+	check(err)
 	if len(Settings.DenvHome) < 1 {
 		panic("Missing DenvHome setting")
 	}
@@ -42,5 +44,4 @@ func init() {
 	if len(Settings.IgnoreFile) < 1 {
 		panic("Missing IgnoreFile setting")
 	}
-	Settings.IgnoreFile = pathlib.Join(Settings.DenvHome, Settings.IgnoreFile)
 }

@@ -2,11 +2,8 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"os"
-	"path/filepath"
-	"strings"
 
 	"github.com/buckhx/pathutil"
 )
@@ -14,7 +11,6 @@ import (
 type DenvInfo struct {
 	Current *Denv
 	Path    string
-	Ignore  map[string]bool
 }
 
 var Info DenvInfo
@@ -45,29 +41,6 @@ func (d *DenvInfo) Load() {
 	if err != nil {
 		panic(err)
 	}
-	if pathutil.Exists(Settings.IgnoreFile) {
-		content, err := ioutil.ReadFile(d.Path)
-		if err != nil {
-			panic(err)
-		}
-		patterns := strings.Split(string(content), "\n")
-		for _, pattern := range patterns {
-			d.Ignore[pattern] = true
-		}
-	}
-}
-
-func (d *DenvInfo) Ignored(path string) bool {
-	for pattern, _ := range d.Ignore {
-		ignored, err := filepath.Match(pattern, path)
-		if err != nil {
-			panic(err)
-		}
-		if ignored == true {
-			return true
-		}
-	}
-	return false
 }
 
 func (d *DenvInfo) ToString() string {
@@ -86,10 +59,6 @@ func bootstrap() error {
 		if err != nil {
 			return err
 		}
-	}
-	// Warn DENVIGNORE
-	if !pathutil.Exists(Settings.IgnoreFile) {
-		fmt.Printf("Warning: No .denvignore file at %s, all hidden files will be managed\n", Settings.IgnoreFile)
 	}
 	return nil
 }

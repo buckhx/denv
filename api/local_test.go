@@ -2,14 +2,14 @@ package api
 
 import (
 	"fmt"
-	"testing"
 	"reflect"
+	"testing"
 )
 
 func TestActivate(t *testing.T) {
 	d := NewDenv("test")
 	cases := []struct {
-		in string
+		in   string
 		want *Denv
 	}{
 		{"", nil},
@@ -53,7 +53,7 @@ func TestDeactivate(t *testing.T) {
 
 func TestList(t *testing.T) {
 	// Maybe implement a set
-	denvs := map[*Denv]bool {
+	denvs := map[*Denv]bool{
 		NewDenv("d1"): true,
 		NewDenv("d2"): true,
 	}
@@ -61,7 +61,7 @@ func TestList(t *testing.T) {
 	set := make(map[string]int)
 	for d, _ := range ls {
 		set[d.Path] += 1
-	}	
+	}
 	for d, _ := range denvs {
 		if count, found := set[d.Path]; !found {
 			t.Errorf("Denvs not subset of List()\nDenvs %s\nList() %s", denvs, ls)
