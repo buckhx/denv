@@ -12,7 +12,7 @@ func TestIgnore(t *testing.T) {
 	d = NewDenv("test")
 	err := os.RemoveAll(d.Path + "/*")
 	check(err)
-	patterns := []byte("test")
+	patterns := []byte("test\n*.test")
 	err = ioutil.WriteFile(pathlib.Join(d.Path, Settings.IgnoreFile), patterns, 0644)
 	check(err)
 	d = NewDenv("test")
@@ -22,6 +22,8 @@ func TestIgnore(t *testing.T) {
 	}{
 		{"", false},
 		{"test", true},
+		{"hey.test", true},
+		{"test.txt", false},
 	}
 	for _, c := range cases {
 		ignored := d.Ignored(c.in)
