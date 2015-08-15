@@ -1,7 +1,6 @@
 package api
 
 import (
-	"io/ioutil"
 	pathlib "path"
 
 	"github.com/buckhx/pathutil"
@@ -23,15 +22,8 @@ func check(err error) {
 }
 
 func init() {
-	// TODO: create a settings lib
-	path := "settings.yml"
-	if !pathutil.Exists(path) {
-		// for tests to reference correct settings
-		path = pathlib.Join("..", path)
-	}
-	config, err := ioutil.ReadFile(path)
-	check(err)
-	err = yaml.Unmarshal(config, &Settings)
+	// settings_yml generated into resources.go
+	err := yaml.Unmarshal([]byte(settings_yml), &Settings)
 	check(err)
 	if len(Settings.DenvHome) < 1 {
 		panic("Missing DenvHome setting")

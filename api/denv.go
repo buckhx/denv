@@ -44,19 +44,16 @@ func (d *Denv) ToString() string {
 
 func (d *Denv) LoadIgnore() {
 	d.Ignore = make(map[string]bool)
-	path := pathlib.Join(d.Path, Settings.IgnoreFile)
-	if pathutil.Exists(path) == true {
-		content, err := ioutil.ReadFile(path)
-		if err != nil {
-			panic(err)
-		}
+	if pathutil.Exists(d.ignoreFile()) == true {
+		content, err := ioutil.ReadFile(d.ignoreFile())
+		check(err)
 		//TODO handle comments and stuff
 		patterns := strings.Split(string(content), "\n")
 		for _, pattern := range patterns {
 			d.Ignore[pattern] = true
 		}
 	} else {
-		fmt.Printf("Warning: Denv %s has no .denvignore file at %s, all hidden files will be managed\n", d.Name(), path)
+		fmt.Printf("Warning: Denv %s has no .denvignore file at %s, all hidden files will be managed\n", d.Name(), d.ignoreFile())
 	}
 }
 
@@ -71,16 +68,23 @@ func GetDenv(name string) (*Denv, error) {
 	return NewDenv(name), nil
 }
 
+func (d *Denv) ignoreFile() string {
+	return pathlib.Join(d.Path, Settings.IgnoreFile)
+}
+
+func (d *Denv) bootstrap() {
+	if !pathutil.Exists(d.Path) {
+		err := os.MkdirAll(d.Path, 0744)
+		check(err)
+		err = ioutil.WriteFile(d.ignoreFile(), []byte(_default_denvignore), 0644)
+		check(err)
+	}
+}
+
 func NewDenv(name string) *Denv {
 	d := new(Denv)
 	d.Path = pathlib.Join(Settings.DenvHome, name)
-	if !pathutil.Exists(d.Path) {
-		err := os.MkdirAll(d.Path, 0744)
-		if err != nil {
-			panic(err)
-		}
-		//TODO: Bootstrap .gitignore
-	}
+	d.bootstrap()
 	d.LoadIgnore()
 	return d
 }

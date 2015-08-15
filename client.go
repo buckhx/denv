@@ -8,6 +8,8 @@ import (
 	"github.com/codegangsta/cli"
 )
 
+//go:generate go run scripts/include.go
+
 func main() {
 	client(os.Args)
 }
