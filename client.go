@@ -80,6 +80,18 @@ func client(args []string) {
 			},
 		},
 		{
+			Name:        "snapshot",
+			Aliases:     []string{"s", "save"},
+			Usage:       "devenv w",
+			Description: "Which environemnt is currently activated",
+			Before:      argsRequired,
+			Action: func(c *cli.Context) {
+				name := c.Args().First()
+				denv := api.Snapshot(name)
+				fmt.Printf("Created a snapshot for %q\n", denv.Name())
+			},
+		},
+		{
 			Name:        "which",
 			Aliases:     []string{"w"},
 			Usage:       "devenv w",
