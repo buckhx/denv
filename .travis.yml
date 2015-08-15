@@ -1,5 +1,6 @@
 language: go
 install: go run scripts/include.go
-
+  - go get -t -v ./..
+  - go run scripts/include.go
 go:
   - tip
