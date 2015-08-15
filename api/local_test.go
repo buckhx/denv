@@ -25,8 +25,11 @@ func TestActivate(t *testing.T) {
 			t.Errorf("Wanted something, but threw an error %s", err)
 		} else if !reflect.DeepEqual(c.want, got) {
 			t.Errorf("Activate(%q) wanted %s, got %s", c.in, c.want.ToString(), got.ToString())
+		} else if got != nil {
+			got.remove()
 		}
 	}
+	d = NewDenv("test")
 	denv, err := Activate("test")
 	if err != nil {
 		t.Errorf("Error creating Denv, %s", err)
@@ -34,6 +37,7 @@ func TestActivate(t *testing.T) {
 	if Info.Current != denv {
 		t.Errorf("Activate(test) did not properly assign Info.Current, %s", Info.ToString())
 	}
+	denv.remove()
 }
 
 func TestDeactivate(t *testing.T) {
@@ -49,6 +53,7 @@ func TestDeactivate(t *testing.T) {
 	if Info.Current != nil {
 		t.Errorf("Deactivate() did not clear Info.Current, %s", Info.ToString())
 	}
+	active.remove()
 }
 
 func TestList(t *testing.T) {
@@ -70,6 +75,7 @@ func TestList(t *testing.T) {
 		} else {
 			set[d.Path] = count - 1
 		}
+		d.remove()
 	}
 }
 
@@ -83,5 +89,12 @@ func TestWhich(t *testing.T) {
 	if Which() != nil {
 		t.Errorf("Which() did not return nil on deactivate, %s, %s", d, Which())
 	}
+	d.remove()
+}
 
+func TestSnapshot(t *testing.T) {
+	d := Snapshot("testsnapshot")
+	if d == nil {
+		t.Errorf("Snapshot did not return Denv")
+	}
 }

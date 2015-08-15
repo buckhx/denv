@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"os/user"
 	pathlib "path"
 	"path/filepath"
 	"strings"
@@ -49,8 +50,10 @@ func (d *Denv) LoadIgnore() {
 		check(err)
 		//TODO handle comments and stuff
 		patterns := strings.Split(string(content), "\n")
+		usr, _ := user.Current()
 		for _, pattern := range patterns {
-			d.Ignore[pattern] = true
+			path := pathlib.Join(usr.HomeDir, pattern)
+			d.Ignore[path] = true
 		}
 	} else {
 		fmt.Printf("Warning: Denv %s has no .denvignore file at %s, all hidden files will be managed\n", d.Name(), d.ignoreFile())
@@ -68,10 +71,6 @@ func GetDenv(name string) (*Denv, error) {
 	return NewDenv(name), nil
 }
 
-func (d *Denv) ignoreFile() string {
-	return pathlib.Join(d.Path, Settings.IgnoreFile)
-}
-
 func (d *Denv) bootstrap() {
 	if !pathutil.Exists(d.Path) {
 		err := os.MkdirAll(d.Path, 0744)
@@ -79,6 +78,14 @@ func (d *Denv) bootstrap() {
 		err = ioutil.WriteFile(d.ignoreFile(), []byte(_default_denvignore), 0644)
 		check(err)
 	}
+}
+
+func (d *Denv) ignoreFile() string {
+	return pathlib.Join(d.Path, Settings.IgnoreFile)
+}
+
+func (d *Denv) remove() error {
+	return os.RemoveAll(d.Path)
 }
 
 func NewDenv(name string) *Denv {
