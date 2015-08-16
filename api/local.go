@@ -58,7 +58,7 @@ func Snapshot(name string) *Denv {
 	}
 	var denvfiles []string
 	for _, f := range homeFiles() {
-		if !d.Ignored(f) {
+		if d.IsDenvFile(f) {
 			denvfiles = append(denvfiles, f)
 		}
 	}

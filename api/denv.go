@@ -49,8 +49,14 @@ func (d *Denv) Files() (included []string, ignored []string) {
 
 // Check to see if a file path be ignored by this Denv
 func (d *Denv) IsIgnored(path string) bool {
+	usr, _ := user.Current()
+	//path includes homedir and file is hidden
+	if !strings.HasPrefix(path, usr.HomeDir) || !strings.HasPrefix(pathlib.Base(path), ".") {
+		return true
+	}
 	for pattern, _ := range d.Ignore {
 		ignored, err := filepath.Match(pattern, path)
+		//fmt.Printf("path: %q, pattern: %q, ignored: %t\n", path, pattern, ignored)
 		check(err)
 		if ignored == true {
 			return true
@@ -59,7 +65,7 @@ func (d *Denv) IsIgnored(path string) bool {
 	return false
 }
 
-func (d *Denv) IsNotIgnored(path string) bool {
+func (d *Denv) IsDenvFile(path string) bool {
 	return !d.IsIgnored(path)
 }
 
@@ -83,14 +89,21 @@ func (d *Denv) LoadIgnore() {
 
 // Given an arbitrary path, return which files would be included
 // and which would be ignored
-func (d *Denv) MatchedFiles(string path) (inluded []string, ignored []string) {
-	for _, f := range path {
-		if d.Ignored(f) {
-			ignored = append(ignored, f)
+func (d *Denv) MatchedFiles(path string) (included []string, ignored []string) {
+	usr, _ := user.Current()
+	err := filepath.Walk(usr.HomeDir, func(path string, file os.FileInfo, err error) error {
+		if d.IsIgnored(path) {
+			ignored = append(ignored, path)
 		} else {
-			included = append(included, f)
+			included = append(included, path)
 		}
-	}
+		if file.IsDir() {
+			return filepath.SkipDir
+		} else {
+			return err
+		}
+	})
+	check(err)
 	return
 }
 
