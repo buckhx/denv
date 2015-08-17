@@ -1,4 +1,9 @@
 .bash_history
+.gimme
+.cache
+.gem
+.bundle
+.erlang.cookie
 .git
 .denv*
 .ssh
