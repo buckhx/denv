@@ -1,4 +1,7 @@
 .bash_history
+.gnupg
+.npm
+.nvm
 .gimme
 .cache
 .gem

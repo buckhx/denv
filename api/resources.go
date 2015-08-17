@@ -6,6 +6,9 @@ infofile: .denvinfo
 ignorefile: .denvignore
 `
 _default_denvignore = `.bash_history
+.gnupg
+.npm
+.nvm
 .gimme
 .cache
 .gem
