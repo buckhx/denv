@@ -15,6 +15,7 @@ type Config struct {
 
 var Settings Config
 
+//TODO move to a util file
 func check(err error) {
 	if err != nil {
 		panic(err)

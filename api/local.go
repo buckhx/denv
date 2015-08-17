@@ -58,6 +58,7 @@ func Snapshot(name string) *Denv {
 	usr, _ := user.Current()
 	included, _ := d.MatchedFiles(usr.HomeDir)
 	for _, src := range included {
+		//TODO: only copy root files and dirs
 		dst := d.expandPath(pathlib.Base(src))
 		err := cp(src, dst)
 		check(err)
