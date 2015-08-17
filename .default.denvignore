@@ -2,6 +2,7 @@
 .gnupg
 .npm
 .nvm
+.rvm
 .gimme
 .cache
 .gem

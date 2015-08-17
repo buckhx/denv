@@ -9,6 +9,7 @@ _default_denvignore = `.bash_history
 .gnupg
 .npm
 .nvm
+.rvm
 .gimme
 .cache
 .gem
