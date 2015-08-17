@@ -68,7 +68,7 @@ func Snapshot(name string) *Denv {
 }
 
 func cp(src, dst string) error {
-	//fmt.Printf("cp -rf %s %s\n", src, dst)
+	fmt.Printf("cp -rf %s %s\n", src, dst)
 	cmd := exec.Command("cp", "-rf", src, dst)
 	return cmd.Run()
 }
