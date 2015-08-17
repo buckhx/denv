@@ -87,7 +87,12 @@ func client(args []string) {
 			Before:      argsRequired,
 			Action: func(c *cli.Context) {
 				name := c.Args().First()
+				fmt.Println("Snapshotting...")
 				denv := api.Snapshot(name)
+				included, _ := denv.Files()
+				for _, in := range included {
+					fmt.Printf("\t%s\n", in)
+				}
 				fmt.Printf("Created a snapshot for %q\n", denv.Name())
 			},
 		},
