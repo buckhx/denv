@@ -3,63 +3,92 @@ package api
 import (
 	"io/ioutil"
 	"os"
-	"os/user"
-	pathlib "path"
+	"reflect"
 	"testing"
 )
 
 func TestIgnore(t *testing.T) {
 	var d *Denv
-	d = NewDenv("test")
+	d = NewDenv("test-ignore")
 	err := os.RemoveAll(d.Path + "/*")
 	check(err)
 	patterns := []byte(".test\n*.test")
-	err = ioutil.WriteFile(pathlib.Join(d.Path, Settings.IgnoreFile), patterns, 0644)
+	err = ioutil.WriteFile(d.expandPath(Settings.IgnoreFile), patterns, 0644)
+	d.LoadIgnore()
 	check(err)
-	d = NewDenv("test")
-	usr, _ := user.Current()
-	home := usr.HomeDir
 	cases := []struct {
 		in      string
 		ignored bool
 	}{
 		{"", true},
 		{".test", true},
-		{pathlib.Join(home, ".test"), true},
-		{pathlib.Join(home, "test"), true},
-		{pathlib.Join(home, ".legit"), false},
+		{d.expandPath(".test"), true},
+		{d.expandPath("test"), true},
+		{d.expandPath(".legit"), false},
 		{"hey.test", true},
 		{"test.txt", true},
-		{pathlib.Join(home, "hey.test"), true},
-		{pathlib.Join(home, ".hey.test"), true},
-		{pathlib.Join(home, "test.txt"), true},
-		{pathlib.Join(home, ".legit.txt"), false},
+		{d.expandPath("hey.test"), true},
+		{d.expandPath(".hey.test"), true},
+		{d.expandPath("test.txt"), true},
+		{d.expandPath(".legit.txt"), false},
 	}
 	for _, c := range cases {
 		ignored := d.IsIgnored(c.in)
 		if ignored != c.ignored {
-			t.Errorf("Ignored(%q) did not ignore", c.in)
+			t.Errorf("IsIgnored(%q) != %t", c.in, c.ignored)
 		}
 	}
 	d.remove()
-	d = NewDenv("test")
+	d = NewDenv("test-ignore")
 	//This are more for default ignores
 	cases = []struct {
 		in      string
 		ignored bool
 	}{
 		{".denv", true},
-		{pathlib.Join(usr.HomeDir, ".denv"), true},
-		{pathlib.Join(usr.HomeDir, ".bash_history"), true},
-		{pathlib.Join(usr.HomeDir, ".viminfo"), true},
-		{pathlib.Join(usr.HomeDir, ".legit"), false},
+		{d.expandPath(".denv"), true},
+		{d.expandPath(".denvignore"), true},
+		{d.expandPath(".bash_history"), true},
+		{d.expandPath(".viminfo"), true},
+		{d.expandPath(".legit"), false},
 		{".bash_history", true},
 	}
 	for _, c := range cases {
 		ignored := d.IsIgnored(c.in)
 		if ignored != c.ignored {
-			t.Errorf("Ignored(%q) did not ignore", c.in)
+			t.Errorf("IsIgnored(%q) != %t", c.in, c.ignored)
 		}
 	}
 	d.remove()
+}
+
+func TestInclude(t *testing.T) {
+	d := NewDenv("test-include")
+	ioutil.WriteFile(d.expandPath(".test.txt"), []byte("derp"), 0644)
+	in, ex := d.Files()
+	wantIn := []string{d.expandPath(".test.txt")}
+	wantEx := []string{d.expandPath(".denvignore")}
+	if !reflect.DeepEqual(in, wantIn) {
+		t.Errorf("Included files did not match, Want: %q, Got: %q", wantIn, in)
+	}
+	if !reflect.DeepEqual(ex, wantEx) {
+		t.Errorf("Ignored files did not match, Want: %q, Got: %q", wantEx, ex)
+	}
+}
+
+func TestMatchedFiles(t *testing.T) {
+	from := NewDenv("test-matched-files-from")
+	to := NewDenv("test-matched-files-to")
+	//TODO make api for changing gitignore
+	want := []string{to.expandPath(".test.txt")}
+	ioutil.WriteFile(want[0], []byte("derp"), 0644)
+	got, _ := from.MatchedFiles(to.Path)
+	if !reflect.DeepEqual(want, got) {
+		t.Errorf("MatchedFiles(%q) != %q, got %q", to.Path, want, got)
+	}
+	from.remove()
+	to.remove()
+}
+
+func TestExpandPath(t *testing.T) {
 }

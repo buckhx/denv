@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"os/user"
 	pathlib "path"
 	"path/filepath"
 	"strings"
@@ -49,13 +48,17 @@ func (d *Denv) Files() (included []string, ignored []string) {
 
 // Check to see if a file path be ignored by this Denv
 func (d *Denv) IsIgnored(path string) bool {
-	usr, _ := user.Current()
-	//path includes homedir and file is hidden
-	if !strings.HasPrefix(path, usr.HomeDir) || !strings.HasPrefix(pathlib.Base(path), ".") {
+	//path must include denvpath and file is hidden
+	if !strings.HasPrefix(path, d.Path+"/.") {
+		//fmt.Printf("Path: %q, Prefix: %q\n", path, d.Path+"/.")
 		return true
 	}
 	for pattern, _ := range d.Ignore {
 		ignored, err := filepath.Match(pattern, path)
+		//TODO support inverse and include patterns
+		//if strings.HasPrefix(pattern, ".!") {
+		//	ignored = !ignored
+		//}
 		//fmt.Printf("path: %q, pattern: %q, ignored: %t\n", path, pattern, ignored)
 		check(err)
 		if ignored == true {
@@ -77,9 +80,8 @@ func (d *Denv) LoadIgnore() {
 		check(err)
 		//TODO handle comments and stuff
 		patterns := strings.Split(string(content), "\n")
-		usr, _ := user.Current()
 		for _, pattern := range patterns {
-			path := pathlib.Join(usr.HomeDir, pattern)
+			path := d.expandPath(pattern)
 			d.Ignore[path] = true
 		}
 	} else {
@@ -89,19 +91,26 @@ func (d *Denv) LoadIgnore() {
 
 // Given an arbitrary path, return which files would be included
 // and which would be ignored
-func (d *Denv) MatchedFiles(path string) (included []string, ignored []string) {
-	usr, _ := user.Current()
-	err := filepath.Walk(usr.HomeDir, func(path string, file os.FileInfo, err error) error {
-		if d.IsIgnored(path) {
+func (d *Denv) MatchedFiles(root string) (included []string, ignored []string) {
+	err := filepath.Walk(root, func(path string, file os.FileInfo, err error) error {
+		//chpath is created for when testing denvfiles against another dir
+		chpath := strings.Replace(path, root, d.Path, 1)
+		if path == root || chpath == root {
+			// We still want to inspect the root
+			return err
+		} else if d.IsIgnored(chpath) {
 			ignored = append(ignored, path)
 		} else {
 			included = append(included, path)
 		}
+		return err
+		/* this won't expand dirs when inspecting files
 		if file.IsDir() {
 			return filepath.SkipDir
 		} else {
 			return err
 		}
+		*/
 	})
 	check(err)
 	return
@@ -127,6 +136,10 @@ func (d *Denv) bootstrap() {
 		err = ioutil.WriteFile(d.ignoreFile(), []byte(_default_denvignore), 0644)
 		check(err)
 	}
+}
+
+func (d *Denv) expandPath(path string) string {
+	return pathlib.Join(d.Path, path)
 }
 
 // Path to the actual ignore file

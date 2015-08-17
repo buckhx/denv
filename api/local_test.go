@@ -1,7 +1,11 @@
 package api
 
 import (
-	"fmt"
+	"bytes"
+	"io/ioutil"
+	"os"
+	"os/user"
+	pathlib "path"
 	"reflect"
 	"testing"
 )
@@ -17,7 +21,7 @@ func TestActivate(t *testing.T) {
 		{"notexist", nil},
 	}
 	for _, c := range cases {
-		fmt.Printf("Testing Activate(%s)\n", c.in)
+		//fmt.Printf("Testing Activate(%s)\n", c.in)
 		got, err := Activate(c.in)
 		if c.want == nil && got != nil && err != nil {
 			t.Errorf("Activate(%q) returned an error, but not nil Denv")
@@ -93,8 +97,58 @@ func TestWhich(t *testing.T) {
 }
 
 func TestSnapshot(t *testing.T) {
-	d := Snapshot("testsnapshot")
+	usr, _ := user.Current()
+	home := usr.HomeDir
+	// could makke thse tempfiles
+	testFile := pathlib.Join(home, ".test.txt")
+	testDir := pathlib.Join(home, ".test")
+	testDirFile := pathlib.Join(home, ".test/testdir.txt")
+	err := os.MkdirAll(testDir, 0744)
+	check(err)
+	err = ioutil.WriteFile(testFile, []byte("derp"), 0664)
+	check(err)
+	err = ioutil.WriteFile(testDirFile, []byte("derp"), 0664)
+	check(err)
+	checks := map[string]bool{
+		testFile:    false,
+		testDir:     false,
+		testDirFile: false,
+	}
+	d := Snapshot("test-snapshot")
 	if d == nil {
 		t.Errorf("Snapshot did not return Denv")
 	}
+	included, _ := d.Files()
+	for _, path := range included {
+		t.Logf("Base path: %q, test: %q\n", pathlib.Base(path), pathlib.Base(testFile))
+		if pathlib.Base(path) == pathlib.Base(testFile) {
+			if fileCompare(testFile, path) == true {
+				checks[testFile] = true
+			}
+		}
+		if pathlib.Base(path) == pathlib.Base(testDir) {
+			checks[testDir] = true
+		}
+		if pathlib.Base(path) == pathlib.Base(testDirFile) {
+			if fileCompare(testDirFile, path) == true {
+				checks[testDirFile] = true
+			}
+		}
+	}
+	for k, v := range checks {
+		if v == false {
+			t.Errorf("Snapshot did not persist %q correctly", k)
+		}
+	}
+	os.Remove(testFile)
+	os.Remove(testDir)
+}
+
+func fileCompare(first, second string) bool {
+	//Reads both into memory
+	f1, err := ioutil.ReadFile(first)
+	check(err)
+	f2, err := ioutil.ReadFile(second)
+	check(err)
+	return bytes.Equal(f1, f2)
 }
