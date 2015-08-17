@@ -38,6 +38,7 @@ func List() map[*Denv]bool {
 	err := filepath.Walk(Settings.DenvHome, func(path string, file os.FileInfo, err error) error {
 		if file.IsDir() && path != Settings.DenvHome {
 			denvs[NewDenv(file.Name())] = true
+			return filepath.SkipDir // don't recurse
 		}
 		return err
 	})
@@ -67,7 +68,7 @@ func Snapshot(name string) *Denv {
 }
 
 func cp(src, dst string) error {
-	fmt.Printf("cp -rf %s %s\n", src, dst)
+	//fmt.Printf("cp -rf %s %s\n", src, dst)
 	cmd := exec.Command("cp", "-rf", src, dst)
 	return cmd.Run()
 }

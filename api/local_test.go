@@ -120,7 +120,7 @@ func TestSnapshot(t *testing.T) {
 	}
 	included, _ := d.Files()
 	for _, path := range included {
-		t.Logf("Base path: %q, test: %q\n", pathlib.Base(path), pathlib.Base(testFile))
+		//t.Logf("Base path: %q, test: %q\n", pathlib.Base(path), pathlib.Base(testFile))
 		if pathlib.Base(path) == pathlib.Base(testFile) {
 			if fileCompare(testFile, path) == true {
 				checks[testFile] = true
