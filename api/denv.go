@@ -95,22 +95,17 @@ func (d *Denv) MatchedFiles(root string) (included []string, ignored []string) {
 	err := filepath.Walk(root, func(path string, file os.FileInfo, err error) error {
 		//chpath is created for when testing denvfiles against another dir
 		chpath := strings.Replace(path, root, d.Path, 1)
-		if path == root || chpath == root {
-			// We still want to inspect the root
-			return err
+		if path == root {
+			return err // allows to recursively inspect root
 		} else if d.IsIgnored(chpath) {
 			ignored = append(ignored, path)
+			if file.IsDir() {
+				return filepath.SkipDir
+			}
 		} else {
 			included = append(included, path)
 		}
 		return err
-		/* this won't expand dirs when inspecting files
-		if file.IsDir() {
-			return filepath.SkipDir
-		} else {
-			return err
-		}
-		*/
 	})
 	check(err)
 	return
