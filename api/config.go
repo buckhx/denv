@@ -11,6 +11,7 @@ type Config struct {
 	DenvHome   string
 	IgnoreFile string
 	InfoFile   string
+	SnapshotDenv	string
 }
 
 var Settings Config
@@ -36,5 +37,8 @@ func init() {
 	Settings.InfoFile = pathlib.Join(Settings.DenvHome, Settings.InfoFile)
 	if len(Settings.IgnoreFile) < 1 {
 		panic("Missing IgnoreFile setting")
+	}
+	if len(Settings.SnapshotDenv) < 1 {
+		panic("Missing SnapshotDenv setting")
 	}
 }

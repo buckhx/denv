@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"bytes"
 	"io/ioutil"
 	"os"
@@ -45,11 +46,16 @@ func TestActivate(t *testing.T) {
 }
 
 func TestDeactivate(t *testing.T) {
-	NewDenv("test") // Forces creation if not there
-	active, err := Activate("test")
+	usr, _ := user.Current()
+	home := usr.HomeDir
+	testFile := pathlib.Join(home, ".test-deactivate.txt")
+	check(ioutil.WriteFile(testFile, []byte("deactivate-derp"), 0664))
+	Snapshot("test-deactivate")
+	active, err := Activate("test-deactivate")
 	if err != nil {
 		t.Errorf("Could not Activate(test), %s", err)
 	}
+	check(ioutil.WriteFile(testFile, []byte("deactivate-herp"), 0664))
 	deactive := Deactivate()
 	if active != deactive {
 		t.Errorf("Deactivate() reaturned different denv, %p, %p", &active, &deactive)
@@ -57,7 +63,11 @@ func TestDeactivate(t *testing.T) {
 	if Info.Current != nil {
 		t.Errorf("Deactivate() did not clear Info.Current, %s", Info.ToString())
 	}
-	active.remove()
+	if !fileCompare(testFile, active.expandPath(".test-deactivate.txt")) {
+		t.Errorf("Deactivate() did not correctly restore the home directory")
+	}
+	//os.Remove(testFile)
+	//active.remove()
 }
 
 func TestList(t *testing.T) {
@@ -145,6 +155,7 @@ func TestSnapshot(t *testing.T) {
 }
 
 func fileCompare(first, second string) bool {
+	fmt.Printf("fileCompare %q, %q\n", first, second)
 	//Reads both into memory
 	f1, err := ioutil.ReadFile(first)
 	check(err)

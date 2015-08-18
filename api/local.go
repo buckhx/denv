@@ -14,6 +14,9 @@ func Activate(env string) (*Denv, error) {
 	if err != nil {
 		return nil, err
 	}
+	snap := NewDenv(Settings.SnapshotDenv)
+	snap.SetDenvIgnore(denv.ignoreFile())
+	snap = Snapshot(Settings.SnapshotDenv)
 	Info.Current = denv
 	Info.Flush()
 	return denv, nil
@@ -25,12 +28,14 @@ func Activate(env string) (*Denv, error) {
 func Deactivate() *Denv {
 	denv := Info.Current
 	if Info.IsActive() {
+		Activate(Settings.SnapshotDenv)
 		Info.Clear()
 		Info.Flush()
 	}
 	return denv
 }
 
+// TODO: Make a ls denv -> files
 func List() map[*Denv]bool {
 	//TODO Check is Settings.Denv.Path exists
 	denvs := make(map[*Denv]bool)
@@ -61,14 +66,22 @@ func Snapshot(name string) *Denv {
 	for _, src := range included {
 		//TODO: only copy root files and dirs
 		dst := d.expandPath(pathlib.Base(src))
-		err := cp(src, dst)
-		check(err)
+		err := fileCopy(src, dst)
+		if err != nil {
+			fmt.Printf("WARNING: Could not copy %s to %s, skipping...", src, dst)
+		}
 	}
 	return d
 }
 
-func cp(src, dst string) error {
+//TODO: move to a util
+func fileCopy(src, dst string) error {
 	//fmt.Printf("cp -rf %s %s\n", src, dst)
 	cmd := exec.Command("cp", "-rf", src, dst)
-	return cmd.Run()
+	err := cmd.Run()
+	if err != nil {
+		return fmt.Errorf("ERROR: cp -rf %s %s\n", src, dst)
+	} else {
+		return nil
+	}
 }

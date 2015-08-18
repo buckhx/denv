@@ -40,6 +40,7 @@ func NewDenv(name string) *Denv {
 	return d
 }
 
+//TODO addd denv.AddFile(path)
 // Paths of files in the Denv Definition
 // Tells you which paths are currently included and ignored
 func (d *Denv) Files() (included []string, ignored []string) {
@@ -114,6 +115,15 @@ func (d *Denv) MatchedFiles(root string) (included []string, ignored []string) {
 // Name of the denv
 func (d *Denv) Name() string {
 	return pathlib.Base(d.Path)
+}
+
+func (d *Denv) SetDenvIgnore(path string) {
+	// TODO: assert is a .denvignore
+	if path != d.ignoreFile() {
+		err := fileCopy(path, d.ignoreFile())
+		check(err)
+	}
+	d.LoadIgnore()
 }
 
 // String representation of the denv
