@@ -74,6 +74,8 @@ func TestInclude(t *testing.T) {
 	if !reflect.DeepEqual(ex, wantEx) {
 		t.Errorf("Ignored files did not match, Want: %q, Got: %q", wantEx, ex)
 	}
+	os.Remove(".test.txt")
+	d.remove()
 }
 
 func TestMatchedFiles(t *testing.T) {

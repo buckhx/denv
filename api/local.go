@@ -13,7 +13,10 @@ func Activate(env string) (*Denv, error) {
 	if err != nil {
 		return nil, err
 	}
-	stash(denv)
+	if !Info.IsActive() {
+		// only stash the homedir if no denv is active
+		stash(denv)
+	}
 	Info.Current = denv
 	Info.Flush()
 	return denv, nil
@@ -23,13 +26,13 @@ func Activate(env string) (*Denv, error) {
 //before denv was active. Returns the name of the deactivated denv.
 //Empty string if there was no denv to deactivate
 func Deactivate() *Denv {
-	denv := Info.Current
 	if Info.IsActive() {
+		//fmt.Printf("\tDeactivate %s", Info)
 		restore()
 		Info.Clear()
 		Info.Flush()
 	}
-	return denv
+	return Info.Current
 }
 
 // TODO: Make a ls denv -> files
@@ -55,7 +58,8 @@ func Which() *Denv {
 func Snapshot(name string) *Denv {
 	d, _ := GetDenv(name)
 	if d == nil {
-		fmt.Printf("Denv didn't exist, bootstrapping %s\n", name)
+		//fmt.Printf("Denv didn't exist, bootstrapping %s\n", name)
+		//TODO: only squash when -f flag is passed
 		d = NewDenv(name)
 	}
 	included, _ := d.MatchedFiles(UserHome())
@@ -95,7 +99,7 @@ func stash(denv *Denv) {
 
 //TODO: move to a util
 func fileCopy(src, dst string) error {
-	//fmt.Printf("cp -rf %s %s\n", src, dst)
+	fmt.Printf("\tcp -rf %s %s\n", src, dst)
 	cmd := exec.Command("cp", "-rf", src, dst)
 	err := cmd.Run()
 	if err != nil {

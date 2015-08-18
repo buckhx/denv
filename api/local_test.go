@@ -1,11 +1,9 @@
 package api
 
 import (
-	"fmt"
 	"bytes"
 	"io/ioutil"
 	"os"
-	"os/user"
 	pathlib "path"
 	"reflect"
 	"testing"
@@ -46,19 +44,14 @@ func TestActivate(t *testing.T) {
 }
 
 func TestDeactivate(t *testing.T) {
-	usr, _ := user.Current()
-	home := usr.HomeDir
-	testFile := pathlib.Join(home, ".test-deactivate.txt")
-	check(ioutil.WriteFile(testFile, []byte("before"), 0664))
+	testFile := pathlib.Join(UserHome(), ".test-deactivate.txt")
+	write(testFile, "before")
 	Snapshot("test-deactivate")
-	active, err := Activate("test-deactivate")
-	if err != nil {
-		t.Errorf("Could not Activate(test), %s", err)
-	}
-	check(ioutil.WriteFile(testFile, []byte("after"), 0664))
+	active, _ := Activate("test-deactivate")
+	write(testFile, "after")
 	deactive := Deactivate()
 	if active != deactive {
-		t.Errorf("Deactivate() reaturned different denv, %p, %p", &active, &deactive)
+		t.Errorf("Deactivate() returned different denv, %p, %p", &active, &deactive)
 	}
 	if Info.Current != nil {
 		t.Errorf("Deactivate() did not clear Info.Current, %s", Info.ToString())
@@ -66,10 +59,10 @@ func TestDeactivate(t *testing.T) {
 	contents, err := ioutil.ReadFile(testFile)
 	check(err)
 	if string(contents) != "before" {
-		t.Errorf("Deactivate() did not correctly restore the home directory")
+		t.Errorf("Deactivate() did not correctly restore the UserHome() directory")
 	}
+	//active.remove()
 	os.Remove(testFile)
-	active.remove()
 }
 
 func TestList(t *testing.T) {
@@ -105,22 +98,18 @@ func TestWhich(t *testing.T) {
 	if Which() != nil {
 		t.Errorf("Which() did not return nil on deactivate, %s, %s", d, Which())
 	}
-	d.remove()
+	//d.remove()
 }
 
 func TestSnapshot(t *testing.T) {
-	usr, _ := user.Current()
-	home := usr.HomeDir
 	// could makke thse tempfiles
-	testFile := pathlib.Join(home, ".test.txt")
-	testDir := pathlib.Join(home, ".test")
-	testDirFile := pathlib.Join(home, ".test/testdir.txt")
+	testFile := pathlib.Join(UserHome(), ".test.txt")
+	testDir := pathlib.Join(UserHome(), ".test")
+	testDirFile := pathlib.Join(UserHome(), ".test/testdir.txt")
 	err := os.MkdirAll(testDir, 0744)
 	check(err)
-	err = ioutil.WriteFile(testFile, []byte("derp"), 0664)
-	check(err)
-	err = ioutil.WriteFile(testDirFile, []byte("derp"), 0664)
-	check(err)
+	write(testFile, "derp")
+	write(testDirFile, "derp")
 	checks := map[string]bool{
 		testFile:    false,
 		testDir:     false,
@@ -140,9 +129,7 @@ func TestSnapshot(t *testing.T) {
 		}
 		if pathlib.Base(path) == pathlib.Base(testDir) {
 			checks[testDir] = true
-		}
-		if pathlib.Base(path) == pathlib.Base(testDirFile) {
-			if fileCompare(testDirFile, path) == true {
+			if fileCompare(testDirFile, pathlib.Join(path, "testdir.txt")) == true {
 				checks[testDirFile] = true
 			}
 		}
@@ -152,16 +139,20 @@ func TestSnapshot(t *testing.T) {
 			t.Errorf("Snapshot did not persist %q correctly", k)
 		}
 	}
+	d.remove()
 	os.Remove(testFile)
-	os.Remove(testDir)
+	os.RemoveAll(testDir)
 }
 
 func fileCompare(first, second string) bool {
-	fmt.Printf("fileCompare %q, %q\n", first, second)
 	//Reads both into memory
 	f1, err := ioutil.ReadFile(first)
 	check(err)
 	f2, err := ioutil.ReadFile(second)
 	check(err)
 	return bytes.Equal(f1, f2)
+}
+
+func write(path string, contents string) {
+	check(ioutil.WriteFile(path, []byte(contents), 0664))
 }

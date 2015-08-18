@@ -91,7 +91,8 @@ func (d *Denv) LoadIgnore() {
 }
 
 // Given an arbitrary path, return which files would be included
-// and which would be ignored
+// and which would be ignored. If path contains a folder, it will not
+// be recursed into.
 func (d *Denv) MatchedFiles(root string) (included []string, ignored []string) {
 	err := filepath.Walk(root, func(path string, file os.FileInfo, err error) error {
 		//chpath is created for when testing denvfiles against another dir
@@ -100,11 +101,11 @@ func (d *Denv) MatchedFiles(root string) (included []string, ignored []string) {
 			return err // allows to recursively inspect root
 		} else if d.IsIgnored(chpath) {
 			ignored = append(ignored, path)
-			if file.IsDir() {
-				return filepath.SkipDir
-			}
 		} else {
 			included = append(included, path)
+		}
+		if file.IsDir() {
+			return filepath.SkipDir
 		}
 		return err
 	})
