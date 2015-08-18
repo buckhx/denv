@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"os/user"
 	pathlib "path"
 	"path/filepath"
 )
@@ -14,9 +13,7 @@ func Activate(env string) (*Denv, error) {
 	if err != nil {
 		return nil, err
 	}
-	snap := NewDenv(Settings.SnapshotDenv)
-	snap.SetDenvIgnore(denv.ignoreFile())
-	snap = Snapshot(Settings.SnapshotDenv)
+	stash(denv)
 	Info.Current = denv
 	Info.Flush()
 	return denv, nil
@@ -28,7 +25,7 @@ func Activate(env string) (*Denv, error) {
 func Deactivate() *Denv {
 	denv := Info.Current
 	if Info.IsActive() {
-		Activate(Settings.SnapshotDenv)
+		restore()
 		Info.Clear()
 		Info.Flush()
 	}
@@ -61,8 +58,7 @@ func Snapshot(name string) *Denv {
 		fmt.Printf("Denv didn't exist, bootstrapping %s\n", name)
 		d = NewDenv(name)
 	}
-	usr, _ := user.Current()
-	included, _ := d.MatchedFiles(usr.HomeDir)
+	included, _ := d.MatchedFiles(UserHome())
 	for _, src := range included {
 		//TODO: only copy root files and dirs
 		dst := d.expandPath(pathlib.Base(src))
@@ -73,6 +69,29 @@ func Snapshot(name string) *Denv {
 	}
 	return d
 }
+
+func restore() {
+	restore := NewDenv(Settings.RestoreDenv)
+	if restore == nil {
+		fmt.Errorf("Attempted to restore w/out a RestoreDenv present")
+	}
+	included, _ := restore.Files()
+	for _, src := range included {
+		dst := pathlib.Join(UserHome(), pathlib.Base(src))
+		err := fileCopy(src, dst)
+		if err != nil {
+			fmt.Printf("WARNING: Could not copy %s to %s, skipping...", src, dst)
+		}
+
+	}
+}
+
+func stash(denv *Denv) {
+	snap := NewDenv(Settings.RestoreDenv)
+	snap.SetDenvIgnore(denv.ignoreFile())
+	snap = Snapshot(Settings.RestoreDenv)
+}
+
 
 //TODO: move to a util
 func fileCopy(src, dst string) error {

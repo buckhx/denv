@@ -4,7 +4,7 @@ const (
 settings_yml = `denvhome: ~/.denv
 infofile: .denvinfo
 ignorefile: .denvignore
-snapshotdenv: .snapshot
+restoredenv: .restore
 `
 _default_denvignore = `.bash_history
 .gnupg

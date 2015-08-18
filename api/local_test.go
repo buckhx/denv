@@ -49,13 +49,13 @@ func TestDeactivate(t *testing.T) {
 	usr, _ := user.Current()
 	home := usr.HomeDir
 	testFile := pathlib.Join(home, ".test-deactivate.txt")
-	check(ioutil.WriteFile(testFile, []byte("deactivate-derp"), 0664))
+	check(ioutil.WriteFile(testFile, []byte("before"), 0664))
 	Snapshot("test-deactivate")
 	active, err := Activate("test-deactivate")
 	if err != nil {
 		t.Errorf("Could not Activate(test), %s", err)
 	}
-	check(ioutil.WriteFile(testFile, []byte("deactivate-herp"), 0664))
+	check(ioutil.WriteFile(testFile, []byte("after"), 0664))
 	deactive := Deactivate()
 	if active != deactive {
 		t.Errorf("Deactivate() reaturned different denv, %p, %p", &active, &deactive)
@@ -63,11 +63,13 @@ func TestDeactivate(t *testing.T) {
 	if Info.Current != nil {
 		t.Errorf("Deactivate() did not clear Info.Current, %s", Info.ToString())
 	}
-	if !fileCompare(testFile, active.expandPath(".test-deactivate.txt")) {
+	contents, err := ioutil.ReadFile(testFile)
+	check(err)
+	if string(contents) != "before" {
 		t.Errorf("Deactivate() did not correctly restore the home directory")
 	}
-	//os.Remove(testFile)
-	//active.remove()
+	os.Remove(testFile)
+	active.remove()
 }
 
 func TestList(t *testing.T) {

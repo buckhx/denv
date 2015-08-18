@@ -2,6 +2,7 @@ package api
 
 import (
 	pathlib "path"
+	"os/user"
 
 	"github.com/buckhx/pathutil"
 	"gopkg.in/yaml.v2"
@@ -11,7 +12,7 @@ type Config struct {
 	DenvHome   string
 	IgnoreFile string
 	InfoFile   string
-	SnapshotDenv	string
+	RestoreDenv	string
 }
 
 var Settings Config
@@ -21,6 +22,12 @@ func check(err error) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func UserHome() string {
+        usr, err := user.Current()
+	check(err)
+	return usr.HomeDir
 }
 
 func init() {
@@ -38,7 +45,7 @@ func init() {
 	if len(Settings.IgnoreFile) < 1 {
 		panic("Missing IgnoreFile setting")
 	}
-	if len(Settings.SnapshotDenv) < 1 {
-		panic("Missing SnapshotDenv setting")
+	if len(Settings.RestoreDenv) < 1 {
+		panic("Missing RestoreDenv setting")
 	}
 }

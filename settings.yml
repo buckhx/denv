@@ -1,4 +1,4 @@
 denvhome: ~/.denv
 infofile: .denvinfo
 ignorefile: .denvignore
-snapshotdenv: .snapshot
+restoredenv: .restore
