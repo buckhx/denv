@@ -26,13 +26,14 @@ func Activate(env string) (*Denv, error) {
 //before denv was active. Returns the name of the deactivated denv.
 //Empty string if there was no denv to deactivate
 func Deactivate() *Denv {
+	denv := Info.Current
 	if Info.IsActive() {
-		//fmt.Printf("\tDeactivate %s", Info)
+		//fmt.Printf("\tDeactivate %s\n", Info.Current.Name())
 		restore()
 		Info.Clear()
 		Info.Flush()
 	}
-	return Info.Current
+	return denv
 }
 
 // TODO: Make a ls denv -> files
@@ -96,10 +97,9 @@ func stash(denv *Denv) {
 	snap = Snapshot(Settings.RestoreDenv)
 }
 
-
 //TODO: move to a util
 func fileCopy(src, dst string) error {
-	fmt.Printf("\tcp -rf %s %s\n", src, dst)
+	//fmt.Printf("\tcp -rf %s %s\n", src, dst)
 	cmd := exec.Command("cp", "-rf", src, dst)
 	err := cmd.Run()
 	if err != nil {

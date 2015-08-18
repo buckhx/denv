@@ -44,6 +44,7 @@ func TestActivate(t *testing.T) {
 }
 
 func TestDeactivate(t *testing.T) {
+	Deactivate()
 	testFile := pathlib.Join(UserHome(), ".test-deactivate.txt")
 	write(testFile, "before")
 	Snapshot("test-deactivate")
@@ -62,7 +63,7 @@ func TestDeactivate(t *testing.T) {
 		t.Errorf("Deactivate() did not correctly restore the UserHome() directory")
 	}
 	//active.remove()
-	os.Remove(testFile)
+	//os.Remove(testFile)
 }
 
 func TestList(t *testing.T) {
@@ -154,5 +155,6 @@ func fileCompare(first, second string) bool {
 }
 
 func write(path string, contents string) {
+	//fmt.Printf("\tWriting %q to %q\n", contents, path)
 	check(ioutil.WriteFile(path, []byte(contents), 0664))
 }
