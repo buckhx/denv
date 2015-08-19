@@ -1,7 +1,13 @@
 language: go
 go:
-- release
-- tip
+  - release
+script:
+  - gimme version
+  - go version
+  - go env
+  - go get -t -v ./...
+  - go test -v ./...
+  - go build
 deploy:
   provider: releases
   api_key:
