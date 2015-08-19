@@ -9,3 +9,5 @@ deploy:
   file: denv
   on:
     repo: buckhx/denv
+    tags: true
+    all_branches: true
