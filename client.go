@@ -82,18 +82,29 @@ func client(args []string) {
 		{
 			Name:        "snapshot",
 			Aliases:     []string{"s", "save"},
-			Usage:       "devenv w",
-			Description: "Which environemnt is currently activated",
+			Usage:       "devenv snapshot name",
+			Description: "Snapshot current home directory to Denv name",
 			Before:      argsRequired,
 			Action: func(c *cli.Context) {
 				name := c.Args().First()
-				fmt.Println("Snapshotting...")
-				denv := api.Snapshot(name)
-				included, _ := denv.Files()
-				for _, in := range included {
-					fmt.Printf("\t%s\n", in)
+				denv, _ := api.GetDenv(name)
+				if denv != nil && !c.Bool("force") {
+					fmt.Printf("Denv %q already exists\nOverwrite with denv s -f %s\n", name, name)
+				} else {
+					fmt.Println("Snapshotting...")
+					denv := api.Snapshot(name)
+					included, _ := denv.Files()
+					for _, in := range included {
+						fmt.Printf("\t%s\n", in)
+					}
+					fmt.Printf("Created a snapshot for %q\n", denv.Name())
 				}
-				fmt.Printf("Created a snapshot for %q\n", denv.Name())
+			},
+			Flags: []cli.Flag{
+				cli.BoolFlag{
+					Name:  "force, f",
+					Usage: "Force this command",
+				},
 			},
 		},
 		{
