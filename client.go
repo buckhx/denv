@@ -16,7 +16,7 @@ func main() {
 
 func client(args []string) {
 	app := cli.NewApp()
-	app.Name = "devenv"
+	app.Name = "denv"
 	app.Usage = "Switch up your dev environments"
 	app.Commands = []cli.Command{
 		{
@@ -51,7 +51,7 @@ func client(args []string) {
 		{
 			Name:        "list",
 			Aliases:     []string{"ls"},
-			Usage:       "devenv ls",
+			Usage:       "List the available environments",
 			Description: "List the available environments",
 			Action: func(c *cli.Context) {
 				for denv := range api.List() {
@@ -61,7 +61,7 @@ func client(args []string) {
 		},
 		{
 			Name:        "pull",
-			Usage:       "devenv pull http://github.com/buckhx/denv",
+			Usage:       "Pull the denvs from a remote server",
 			Description: "Pull from the remote devenv",
 			Before:      argsRequired,
 			Action: func(c *cli.Context) {
@@ -72,7 +72,7 @@ func client(args []string) {
 		},
 		{
 			Name:        "push",
-			Usage:       "devenv push",
+			Usage:       "Push up your current denvs to a remote server",
 			Description: "Push your local devenv to the last server that was pulled",
 			Action: func(c *cli.Context) {
 				out := api.Push()
@@ -82,7 +82,7 @@ func client(args []string) {
 		{
 			Name:        "snapshot",
 			Aliases:     []string{"s", "save"},
-			Usage:       "devenv snapshot name",
+			Usage:       "Snapshot home to new denv",
 			Description: "Snapshot current home directory to Denv name",
 			Before:      argsRequired,
 			Action: func(c *cli.Context) {
@@ -110,7 +110,7 @@ func client(args []string) {
 		{
 			Name:        "which",
 			Aliases:     []string{"w"},
-			Usage:       "devenv w",
+			Usage:       "Which denv is currently active",
 			Description: "Which environemnt is currently activated",
 			Action: func(c *cli.Context) {
 				denv := api.Which()
