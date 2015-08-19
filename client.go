@@ -18,6 +18,7 @@ func client(args []string) {
 	app := cli.NewApp()
 	app.Name = "denv"
 	app.Usage = "Switch up your dev environments"
+	app.Version = api.Version
 	app.Commands = []cli.Command{
 		{
 			Name:        "activate",
