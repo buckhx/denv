@@ -6,6 +6,7 @@ import (
 	"os/exec"
 	pathlib "path"
 	"path/filepath"
+	"strings"
 )
 
 func Activate(env string) (*Denv, error) {
@@ -43,7 +44,9 @@ func List() map[*Denv]bool {
 	//TODO decide if this logic should be moved to DenvInfo
 	err := filepath.Walk(Settings.DenvHome, func(path string, file os.FileInfo, err error) error {
 		if file.IsDir() && path != Settings.DenvHome {
-			denvs[NewDenv(file.Name())] = true
+			if !strings.HasPrefix(file.Name(), ".") {
+				denvs[NewDenv(file.Name())] = true
+			}
 			return filepath.SkipDir // don't recurse
 		}
 		return err

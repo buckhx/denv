@@ -40,7 +40,7 @@ func TestActivate(t *testing.T) {
 	if Info.Current != denv {
 		t.Errorf("Activate(test) did not properly assign Info.Current, %s", Info.ToString())
 	}
-	denv.remove()
+	d.remove()
 }
 
 func TestDeactivate(t *testing.T) {
@@ -62,8 +62,8 @@ func TestDeactivate(t *testing.T) {
 	if string(contents) != "before" {
 		t.Errorf("Deactivate() did not correctly restore the UserHome() directory")
 	}
-	//active.remove()
-	//os.Remove(testFile)
+	active.remove()
+	os.Remove(testFile)
 }
 
 func TestList(t *testing.T) {
@@ -99,7 +99,7 @@ func TestWhich(t *testing.T) {
 	if Which() != nil {
 		t.Errorf("Which() did not return nil on deactivate, %s, %s", d, Which())
 	}
-	//d.remove()
+	d.remove()
 }
 
 func TestSnapshot(t *testing.T) {

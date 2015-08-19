@@ -129,7 +129,7 @@ func client(args []string) {
 
 // Check to see if the are enough args
 func argsRequired(c *cli.Context) error {
-	if !c.Args().Present() {
+	if !c.Args().Present() || c.Args().First() == "help" {
 		cli.ShowSubcommandHelp(c)
 		os.Exit(0)
 	}

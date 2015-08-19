@@ -2,12 +2,8 @@ language: go
 go:
   - release
 script:
-  - gimme version
-  - go version
-  - go env
-  - go get -t -v ./...
   - go test -v ./...
-  - go build
+  - go build -x -v
 deploy:
   provider: releases
   api_key:
