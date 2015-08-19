@@ -20,6 +20,7 @@ func Push() string {
 }
 
 func freeze() string {
+	//fuck it, just os.Exec this bad boy
 	//only take denvs
 }
 
@@ -28,6 +29,7 @@ func thaw() {
 }
 
 func compress(paths []string) path string {
+// tar zcvf denv.tar.gz ./denv --exclude="\./denv/\.*"
 
 }
 
