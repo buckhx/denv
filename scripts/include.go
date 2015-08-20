@@ -30,7 +30,13 @@ func getVersion() string {
 	cmd.Stdout = &out
 	err := cmd.Run()
 	if err != nil {
-		panic(err)
+		// No tag, we'll just call it the commit number
+		cmd = exec.Command("git", strings.Split("log --pretty=format:%h -n 1", " ")...)
+		cmd.Stdout = &out
+		err := cmd.Run()
+		if err != nil {
+			panic(err)
+		}
 	}
 	return strings.TrimSpace(out.String())
 }

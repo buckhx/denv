@@ -5,6 +5,7 @@ settings_yml = `denvhome: ~/.denv
 infofile: .denvinfo
 ignorefile: .denvignore
 restoredenv: .restore
+freezer: .freezer
 `
 _default_denvignore = `.bash_history
 .gnupg
@@ -21,5 +22,5 @@ _default_denvignore = `.bash_history
 .ssh
 .viminfo
 `
-Version = "v0.0.0"
+Version = "3e28a10"
 )

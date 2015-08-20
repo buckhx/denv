@@ -60,6 +60,12 @@ func bootstrap() error {
 			return err
 		}
 	}
+	if !pathutil.Exists(Settings.Freezer) {
+		err := os.MkdirAll(Settings.Freezer, 0744)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
 

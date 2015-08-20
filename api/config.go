@@ -13,6 +13,7 @@ type Config struct {
 	IgnoreFile string
 	InfoFile   string
 	RestoreDenv	string
+	Freezer	string
 }
 
 var Settings Config
@@ -45,6 +46,10 @@ func init() {
 	if len(Settings.IgnoreFile) < 1 {
 		panic("Missing IgnoreFile setting")
 	}
+	if len(Settings.Freezer) < 1 {
+		panic("Missing Freezer setting")
+	}
+	Settings.Freezer = pathlib.Join(Settings.DenvHome, Settings.Freezer)
 	if len(Settings.RestoreDenv) < 1 {
 		panic("Missing RestoreDenv setting")
 	}
