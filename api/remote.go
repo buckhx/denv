@@ -26,13 +26,14 @@ func Push() string {
 func freeze(name string) (pkg string) {
 	var stderr bytes.Buffer
 	pkg = pathlib.Join(Settings.Freezer, name)
-	tar_gpg := fmt.Sprintf("tar czvpf - %s --exclude=\"\\./denv/\\.*\" | gpg --symmetric --cipher-algo aes256 -o %s", Settings.DenvHome, pkg)
+	tar_gpg := fmt.Sprintf("tar czvpfC - %s %s --exclude=\"\\./denv/\\.*\" | gpg --symmetric --cipher-algo aes256 -o %s", UserHome(), pathlib.Base(Settings.DenvHome), pkg)
 	cmd := exec.Command("bash", "-c", tar_gpg)
 	cmd.Stderr = &stderr
 	err := cmd.Run()
 	if err != nil {
 		err = fmt.Errorf("%s\n%s\n", stderr.String(), tar_gpg)
 	}
+	fmt.Println(tar_gpg)
 	check(err)
 	return
 }
@@ -46,6 +47,7 @@ func thaw(pkg string) {
 	if err != nil {
 		err = fmt.Errorf("%s\n%s\n", stderr.String(), untar_gpg)
 	}
+	fmt.Println(untar_gpg)
 	check(err)
 	//return thawed denvs
 }
