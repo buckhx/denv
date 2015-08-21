@@ -16,6 +16,10 @@ func Pull(remote string) string {
 }
 
 func Push(remote string) string {
+	Info.Repository.Add(".")
+	Info.Repository.Commit("freeze")
+	Info.Repository.SetRemote("denv", remote)
+	Info.Repository.Push("denv", "master")
 	//pkg := freeze()
 	//pkg = encrypt(pkg, passphrase)
 	//push(pkg, remote)
