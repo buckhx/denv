@@ -15,7 +15,7 @@ func Pull(remote string) string {
 	return ""
 }
 
-func Push() string {
+func Push(remote string) string {
 	//pkg := freeze()
 	//pkg = encrypt(pkg, passphrase)
 	//push(pkg, remote)
@@ -53,8 +53,6 @@ func thaw(pkg string) {
 }
 
 func compress(paths []string) string {
-	//output := "denv.tar.gz.gpg"
-	//cmd := fmt.Sprintf("tar czvpf - %s --exclude="\./denv/\.*" | gpg --symmetric --cipher-algo aes256 -o %s", Settings.DenvHome, output)
 	return "" 
 
 }

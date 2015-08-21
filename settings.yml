@@ -2,4 +2,3 @@ denvhome: ~/.denv
 infofile: .denvinfo
 ignorefile: .denvignore
 restoredenv: .restore
-freezer: .freezer
