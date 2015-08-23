@@ -10,8 +10,8 @@ import (
 )
 
 type DenvInfo struct {
-	Current *Denv
-	Path    string
+	Current    *Denv
+	Path       string
 	Repository *git.Repository
 }
 
@@ -58,7 +58,7 @@ func bootstrap() error {
 		repo, err := git.NewRepository(Settings.DenvHome)
 		check(err)
 		repo.Init()
-		repo.Exclude(".*") // exclude hidden files
+		repo.Exclude("/.*") // exclude hidden root files
 	}
 	if !pathutil.Exists(Settings.Freezer) {
 		err := os.MkdirAll(Settings.Freezer, 0744)

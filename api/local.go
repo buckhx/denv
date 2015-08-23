@@ -75,6 +75,7 @@ func Snapshot(name string) *Denv {
 			fmt.Printf("WARNING: Could not copy %s to %s, skipping...", src, dst)
 		}
 	}
+	d.cleanGitSubmodules()
 	return d
 }
 

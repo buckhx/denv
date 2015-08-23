@@ -75,8 +75,10 @@ func client(args []string) {
 			Name:        "push",
 			Usage:       "Push up your current denvs to a remote server",
 			Description: "Push your local devenv to the last server that was pulled",
+			Before:      argsRequired,
 			Action: func(c *cli.Context) {
-				out := api.Push()
+				remote := c.Args().First()
+				out := api.Push(remote)
 				fmt.Println(out)
 			},
 		},

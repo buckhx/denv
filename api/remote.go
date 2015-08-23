@@ -1,8 +1,8 @@
 package api
 
 import (
-	"fmt"
 	"bytes"
+	"fmt"
 	"os/exec"
 	pathlib "path"
 )
@@ -19,6 +19,7 @@ func Push(remote string) string {
 	Info.Repository.Add(".")
 	Info.Repository.Commit("freeze")
 	Info.Repository.SetRemote("denv", remote)
+	Info.Repository.Pull("denv", "master")
 	Info.Repository.Push("denv", "master")
 	//pkg := freeze()
 	//pkg = encrypt(pkg, passphrase)
@@ -57,7 +58,7 @@ func thaw(pkg string) {
 }
 
 func compress(paths []string) string {
-	return "" 
+	return ""
 
 }
 

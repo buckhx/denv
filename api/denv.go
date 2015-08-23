@@ -144,6 +144,20 @@ func (d *Denv) bootstrap() {
 	}
 }
 
+// We want to track contents of internal git repos
+// This should be done with Git Submodules, but for now
+// We'll just clean out internal git repos
+// TODO: Use submodules for tracking
+func (d *Denv) cleanGitSubmodules() {
+	err := filepath.Walk(d.Path, func(path string, file os.FileInfo, err error) error {
+		if strings.HasPrefix(file.Name(), ".git") {
+			err = os.RemoveAll(path)
+		}
+		return err
+	})
+	check(err)
+}
+
 func (d *Denv) expandPath(path string) string {
 	return pathlib.Join(d.Path, path)
 }
