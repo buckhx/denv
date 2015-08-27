@@ -8,10 +8,15 @@ you switch between your vim environments
 
 ## Installation
 
-Go to the releases page and download the denv artifact
-https://github.com/buckhx/denv/releases/latest 
+You can copy the contents of the scripts/install.py file and run it to 
+install denv into /usr/local/bin like so
 
-We'll add an install script soon that will download it, give proper permissions and place it somewhere on your path
+    ./scripts/install.py
+
+
+Or do it manually by going to the releases page and download the denv artifact
+
+    https://github.com/buckhx/denv/releases/latest 
 
 
 ## Usage
