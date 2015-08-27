@@ -15,16 +15,15 @@ func Pull(remote string) string {
 	return ""
 }
 
-func Push(remote string) string {
+func Push(remote string, branch string) string {
+	Info.Repository.SetRemote("denv", remote)
+	Info.Repository.Fetch("denv")
+	Info.Repository.Checkout("-b", branch)
+	Info.Repository.Checkout(branch)
 	Info.Repository.Add(".")
 	Info.Repository.Commit("freeze")
-	Info.Repository.SetRemote("denv", remote)
-	Info.Repository.Pull("denv", "master")
-	Info.Repository.Push("denv", "master")
-	//pkg := freeze()
-	//pkg = encrypt(pkg, passphrase)
-	//push(pkg, remote)
-	//return remote
+	Info.Repository.Pull("denv", branch)
+	Info.Repository.Push("denv", branch)
 	return ""
 }
 
