@@ -67,8 +67,15 @@ func client(args []string) {
 			Before:      argsRequired,
 			Action: func(c *cli.Context) {
 				remote := c.Args().First()
-				out := api.Pull(remote)
+				out := api.Pull(remote, c.String("branch"))
 				fmt.Println(out)
+			},
+			Flags: []cli.Flag {
+				cli.StringFlag {
+					Name: "branch",
+					Value: "master",
+					Usage: "Branch to use from the remote",
+				},
 			},
 		},
 		{

@@ -7,11 +7,11 @@ import (
 	pathlib "path"
 )
 
-func Pull(remote string) string {
-	//pkg := pull(remote)
-	//pkg = decrypt(pkg, passphrase)
-	//thaw(pkg)
-	//return pkg.dirs()
+func Pull(remote string, branch string) string {
+	Info.Repository.SetRemote("denv", remote)
+	Info.Repository.Checkout("-b", branch)
+	Info.Repository.Checkout(branch)
+	Info.Repository.Pull("denv", branch)
 	return ""
 }
 
