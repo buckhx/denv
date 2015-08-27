@@ -8,17 +8,26 @@ you switch between your vim environments
 
 ## Installation
 
-Not sure yet...
+Go to the releases page and download the denv artifact
+https://github.com/buckhx/denv/releases/latest 
+
+We'll add an install script soon that will download it, give proper permissions and place it somewhere on your path
+
 
 ## Usage
 
 Let's start out by listing the current denvs
 
     denv ls
+    
+You probably won't see anything, so why don't we download some denvs
 
+    dev pull https://github.com/buckhx/template-denv.git
+    
+If you ls again, you should see some stuff
 Now let's turn one of these bad boys on
 
-    denv activate mydenv
+    denv activate python
 
 Actually, let's not
 
@@ -29,8 +38,10 @@ Really I want to save my current environment to a new denv
     denv snapshot newdenv
 
 And push all my denvs to a remote server (passphrase required)
+All the denvs are managed via get, so feel free to create a fork of the template to push to.
+If you have contributions to the template-denv, just shoot over a PR
 
-    denv push https://github.com/buckhx/somepath
+    denv push https://github.com/YOURNAMEHERE/denvs
 
 Log on from a different VM or computer and pull what you just put up there
 
