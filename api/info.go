@@ -60,12 +60,6 @@ func bootstrap() error {
 		repo.Init()
 		repo.Exclude("/.*") // exclude hidden root files
 	}
-	if !pathutil.Exists(Settings.Freezer) {
-		err := os.MkdirAll(Settings.Freezer, 0744)
-		if err != nil {
-			return err
-		}
-	}
 	return nil
 }
 
