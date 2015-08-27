@@ -67,8 +67,8 @@ func client(args []string) {
 			Before:      argsRequired,
 			Action: func(c *cli.Context) {
 				remote := c.Args().First()
-				out := api.Pull(remote, c.String("branch"))
-				fmt.Println(out)
+				api.Pull(remote, c.String("branch"))
+				fmt.Printf("Pulled from %s successfully\n", remote)
 			},
 			Flags: []cli.Flag {
 				cli.StringFlag {

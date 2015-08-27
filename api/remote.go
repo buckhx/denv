@@ -7,6 +7,7 @@ import (
 	pathlib "path"
 )
 
+//TODO: change the returns
 func Pull(remote string, branch string) string {
 	Info.Repository.SetRemote("denv", remote)
 	Info.Repository.Checkout("-b", branch)
