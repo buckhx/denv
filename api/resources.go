@@ -23,5 +23,5 @@ _default_denvignore = `.bash_history
 .ssh
 .viminfo
 `
-Version = "v0.0.1-alpha"
+Version = "v0.0.5-a"
 )

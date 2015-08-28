@@ -12,7 +12,7 @@ func Pull(remote string, branch string) string {
 	Info.Repository.Pull("denv", branch)
 	for d := range List() {
 		_, _, scripts := d.Files()
-		for script := range scripts {
+		for _, script := range scripts {
 			os.Chmod(script, 0744)
 		}
 	}
