@@ -1,13 +1,16 @@
 package api
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	pathlib "path"
 	"path/filepath"
 	"strings"
+	"sort"
 
 	"github.com/buckhx/pathutil"
 )
@@ -40,10 +43,35 @@ func NewDenv(name string) *Denv {
 	return d
 }
 
+func (d *Denv) Enter() {
+	included, _, scripts := d.Files()
+	for _, script := range scripts {
+		if strings.HasSuffix(script, Settings.PreScript) {
+			run_script(script)
+		}
+	}
+	for _, src := range included {
+		dst := pathlib.Join(UserHome(), pathlib.Base(src))
+		err := fileCopy(src, dst)
+		if err != nil {
+			fmt.Printf("WARNING: Could not copy %s to %s, skipping...", src, dst)
+		}
+	}
+}
+
+func (d *Denv) Exit() {
+	_, _, scripts := d.Files()
+	for _, script := range scripts {
+		if strings.HasSuffix(script, Settings.PostScript) {
+			run_script(script)
+		}
+	}
+}
+
 //TODO addd denv.AddFile(path)
 // Paths of files in the Denv Definition
 // Tells you which paths are currently included and ignored
-func (d *Denv) Files() (included []string, ignored []string) {
+func (d *Denv) Files() (included []string, ignored []string, scripts []string) {
 	return d.MatchedFiles(d.Path)
 }
 
@@ -67,6 +95,14 @@ func (d *Denv) IsIgnored(path string) bool {
 		}
 	}
 	return false
+}
+
+func (d *Denv) IsScript(path string) bool {
+	if strings.HasSuffix(path, Settings.PreScript) || strings.HasSuffix(path, Settings.PostScript) {
+		return true
+	} else {
+		return false
+	}
 }
 
 func (d *Denv) IsDenvFile(path string) bool {
@@ -93,12 +129,14 @@ func (d *Denv) LoadIgnore() {
 // Given an arbitrary path, return which files would be included
 // and which would be ignored. If path contains a folder, it will not
 // be recursed into.
-func (d *Denv) MatchedFiles(root string) (included []string, ignored []string) {
+func (d *Denv) MatchedFiles(root string) (included []string, ignored []string, scripts []string) {
 	err := filepath.Walk(root, func(path string, file os.FileInfo, err error) error {
 		//chpath is created for when testing denvfiles against another dir
 		chpath := strings.Replace(path, root, d.Path, 1)
 		if path == root {
 			return err // allows to recursively inspect root
+		} else if d.IsScript(chpath) {
+			scripts = append(scripts, path)
 		} else if d.IsIgnored(chpath) {
 			ignored = append(ignored, path)
 		} else {
@@ -109,6 +147,7 @@ func (d *Denv) MatchedFiles(root string) (included []string, ignored []string) {
 		}
 		return err
 	})
+	sort.Strings(scripts)
 	check(err)
 	return
 }
@@ -170,4 +209,27 @@ func (d *Denv) ignoreFile() string {
 // Completely remove this denv from disk
 func (d *Denv) remove() error {
 	return os.RemoveAll(d.Path)
+}
+
+func operation(command string, args ...string) (string, string, error) {
+	var stderr, stdout bytes.Buffer
+	cmd := exec.Command(command, args...)
+	cmd.Stderr = &stderr
+	cmd.Stdout = &stdout
+	err := cmd.Run()
+	return stdout.String(), stderr.String(), err
+}
+
+func run_script(script string) {
+	fmt.Printf("Executing %s...\n", script)
+	stdout, stderr, err := operation(script)
+	if err != nil {
+		fmt.Println(err)
+	}
+	if len(stdout) > 0 {
+		fmt.Printf(stdout)
+	}
+	if len(stderr) > 0 {
+		fmt.Printf(stderr)
+	}
 }

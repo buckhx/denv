@@ -2,3 +2,5 @@ denvhome: ~/.denv
 infofile: .denvinfo
 ignorefile: .denvignore
 restoredenv: .restore
+prescript: .denvpre
+postscript: .denvpost

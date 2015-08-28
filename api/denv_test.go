@@ -65,7 +65,7 @@ func TestIgnore(t *testing.T) {
 func TestInclude(t *testing.T) {
 	d := NewDenv("test-include")
 	ioutil.WriteFile(d.expandPath(".test.txt"), []byte("derp"), 0644)
-	in, ex := d.Files()
+	in, ex, _ := d.Files()
 	wantIn := []string{d.expandPath(".test.txt")}
 	wantEx := []string{d.expandPath(".denvignore")}
 	if !reflect.DeepEqual(in, wantIn) {
@@ -84,7 +84,7 @@ func TestMatchedFiles(t *testing.T) {
 	//TODO make api for changing gitignore
 	want := []string{to.expandPath(".test.txt")}
 	ioutil.WriteFile(want[0], []byte("derp"), 0644)
-	got, _ := from.MatchedFiles(to.Path)
+	got, _, _ := from.MatchedFiles(to.Path)
 	if !reflect.DeepEqual(want, got) {
 		t.Errorf("MatchedFiles(%q) != %q, got %q", to.Path, want, got)
 	}

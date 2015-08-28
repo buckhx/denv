@@ -120,7 +120,7 @@ func TestSnapshot(t *testing.T) {
 	if d == nil {
 		t.Errorf("Snapshot did not return Denv")
 	}
-	included, _ := d.Files()
+	included, _, _ := d.Files()
 	for _, path := range included {
 		//t.Logf("Base path: %q, test: %q\n", pathlib.Base(path), pathlib.Base(testFile))
 		if pathlib.Base(path) == pathlib.Base(testFile) {

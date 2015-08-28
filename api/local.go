@@ -15,9 +15,11 @@ func Activate(env string) (*Denv, error) {
 		return nil, err
 	}
 	if !Info.IsActive() {
-		// only stash the homedir if no denv is active
-		stash(denv)
+		stash(denv) // only stash the homedir if no denv is active
+	} else {
+		Info.Current.Exit()
 	}
+	denv.Enter()
 	Info.Current = denv
 	Info.Flush()
 	return denv, nil
@@ -29,8 +31,13 @@ func Activate(env string) (*Denv, error) {
 func Deactivate() *Denv {
 	denv := Info.Current
 	if Info.IsActive() {
-		//fmt.Printf("\tDeactivate %s\n", Info.Current.Name())
-		restore()
+		Info.Current.Exit()
+		restore, _ := GetDenv(Settings.RestoreDenv)
+		if restore == nil {
+			fmt.Printf("WARNING: There was no RestoreDenv at %s, something looks fishy...\n", Settings.RestoreDenv)
+		} else {
+			restore.Enter()
+		}
 		Info.Clear()
 		Info.Flush()
 	}
@@ -66,7 +73,7 @@ func Snapshot(name string) *Denv {
 		//TODO: only squash when -f flag is passed
 		d = NewDenv(name)
 	}
-	included, _ := d.MatchedFiles(UserHome())
+	included, _, _ := d.MatchedFiles(UserHome())
 	for _, src := range included {
 		//TODO: only copy root files and dirs
 		dst := d.expandPath(pathlib.Base(src))
@@ -77,22 +84,6 @@ func Snapshot(name string) *Denv {
 	}
 	d.cleanGitSubmodules()
 	return d
-}
-
-func restore() {
-	restore := NewDenv(Settings.RestoreDenv)
-	if restore == nil {
-		fmt.Errorf("Attempted to restore w/out a RestoreDenv present")
-	}
-	included, _ := restore.Files()
-	for _, src := range included {
-		dst := pathlib.Join(UserHome(), pathlib.Base(src))
-		err := fileCopy(src, dst)
-		if err != nil {
-			fmt.Printf("WARNING: Could not copy %s to %s, skipping...", src, dst)
-		}
-
-	}
 }
 
 func stash(denv *Denv) {

@@ -13,6 +13,8 @@ type Config struct {
 	IgnoreFile string
 	InfoFile   string
 	RestoreDenv	string
+	PreScript string
+	PostScript string
 }
 
 var Settings Config

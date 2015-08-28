@@ -110,7 +110,7 @@ func client(args []string) {
 				} else {
 					fmt.Println("Snapshotting...")
 					denv := api.Snapshot(name)
-					included, _ := denv.Files()
+					included, _, _ := denv.Files()
 					for _, in := range included {
 						fmt.Printf("\t%s\n", in)
 					}

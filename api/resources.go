@@ -5,6 +5,8 @@ settings_yml = `denvhome: ~/.denv
 infofile: .denvinfo
 ignorefile: .denvignore
 restoredenv: .restore
+prescript: .denvpre
+postscript: .denvpost
 `
 _default_denvignore = `.bash_history
 .gnupg
