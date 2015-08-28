@@ -222,7 +222,7 @@ func operation(command string, args ...string) (string, string, error) {
 
 func run_script(script string) {
 	fmt.Printf("Executing %s...\n", script)
-	stdout, stderr, err := operation(script)
+	stdout, stderr, err := operation(".", script)
 	if err != nil {
 		fmt.Println(err)
 	}
