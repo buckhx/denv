@@ -40,6 +40,7 @@ func TestActivate(t *testing.T) {
 	if Info.Current != denv {
 		t.Errorf("Activate(test) did not properly assign Info.Current, %s", Info.ToString())
 	}
+	Deactivate()
 	d.remove()
 }
 
