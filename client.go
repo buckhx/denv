@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/buckhx/denv/denv"
+	"github.com/buckhx/denv/denvlib"
 	"github.com/codegangsta/cli"
 )
 
@@ -18,7 +18,7 @@ func client(args []string) {
 	app := cli.NewApp()
 	app.Name = "denv"
 	app.Usage = "Switch up your dev environments"
-	app.Version = denv.Version
+	app.Version = denvlib.Version
 	app.Commands = []cli.Command{
 		{
 			Name:        "activate",
@@ -28,11 +28,11 @@ func client(args []string) {
 			Before:      argsRequired,
 			Action: func(c *cli.Context) {
 				env := c.Args().First()
-				denv, err := denv.Activate(env)
+				d, err := denvlib.Activate(env)
 				if err != nil {
 					fmt.Printf("%q does not exist", env)
 				}
-				fmt.Printf("Activated %s \n", denv.Name())
+				fmt.Printf("Activated %s \n", d.Name())
 			},
 		},
 		{
@@ -41,7 +41,7 @@ func client(args []string) {
 			Usage:       "Deactivate the current environment",
 			Description: "",
 			Action: func(c *cli.Context) {
-				undenv := denv.Deactivate()
+				undenv := denvlib.Deactivate()
 				if undenv != nil {
 					fmt.Printf("Deactivated %s\n", undenv.Name())
 				} else {
@@ -55,7 +55,7 @@ func client(args []string) {
 			Usage:       "List the available environments",
 			Description: "List the available environments",
 			Action: func(c *cli.Context) {
-				for d := range denv.List() {
+				for d := range denvlib.List() {
 					fmt.Println(d.Name())
 				}
 			},
@@ -67,7 +67,7 @@ func client(args []string) {
 			Before:      argsRequired,
 			Action: func(c *cli.Context) {
 				remote := c.Args().First()
-				denv.Pull(remote, c.String("branch"))
+				denvlib.Pull(remote, c.String("branch"))
 				fmt.Printf("Pulled from %s successfully\n", remote)
 			},
 			Flags: []cli.Flag{
@@ -85,7 +85,7 @@ func client(args []string) {
 			Before:      argsRequired,
 			Action: func(c *cli.Context) {
 				remote := c.Args().First()
-				denv.Push(remote, c.String("branch"))
+				denvlib.Push(remote, c.String("branch"))
 				fmt.Printf("Pushed to %s successful\n", remote)
 			},
 			Flags: []cli.Flag{
@@ -104,12 +104,12 @@ func client(args []string) {
 			Before:      argsRequired,
 			Action: func(c *cli.Context) {
 				name := c.Args().First()
-				d, _ := denv.GetDenv(name)
+				d, _ := denvlib.GetDenv(name)
 				if d != nil && !c.Bool("force") {
 					fmt.Printf("Denv %q already exists\nOverwrite with denv s -f %s\n", name, name)
 				} else {
 					fmt.Println("Snapshotting...")
-					d := denv.Snapshot(name)
+					d := denvlib.Snapshot(name)
 					included, _, _ := d.Files()
 					for _, in := range included {
 						fmt.Printf("\t%s\n", in)
@@ -130,7 +130,7 @@ func client(args []string) {
 			Usage:       "Which denv is currently active",
 			Description: "Which environemnt is currently activated",
 			Action: func(c *cli.Context) {
-				d := denv.Which()
+				d := denvlib.Which()
 				// TODO maybe invert this logic?
 				if d != nil {
 					fmt.Println(d.Name())

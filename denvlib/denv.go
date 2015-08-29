@@ -1,4 +1,4 @@
-package denv
+package denvlib
 
 import (
 	"bytes"

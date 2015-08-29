@@ -1,4 +1,4 @@
-package denv
+package denvlib
 
 const (
 	settings_yml = `denvhome: ~/.denv
