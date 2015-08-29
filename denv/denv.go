@@ -1,4 +1,4 @@
-package api
+package denv
 
 import (
 	"bytes"
@@ -9,8 +9,8 @@ import (
 	"os/exec"
 	pathlib "path"
 	"path/filepath"
-	"strings"
 	"sort"
+	"strings"
 
 	"github.com/buckhx/pathutil"
 )

@@ -12,8 +12,8 @@ import (
 // and encodes them as strings literals in textfiles.go
 func main() {
 	resources := []string{"settings.yml", ".default.denvignore"}
-	out, _ := os.Create("api/resources.go")
-	out.Write([]byte("package api \n\nconst (\n"))
+	out, _ := os.Create("denv/resources.go")
+	out.Write([]byte("package denv \n\nconst (\n"))
 	for _, resource := range resources {
 		out.Write([]byte(strings.Replace(resource, ".", "_", -1) + " = `"))
 		f, _ := os.Open(resource)

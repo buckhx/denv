@@ -1,14 +1,14 @@
-package api 
+package denv
 
 const (
-settings_yml = `denvhome: ~/.denv
+	settings_yml = `denvhome: ~/.denv
 infofile: .denvinfo
 ignorefile: .denvignore
 restoredenv: .restore
 prescript: .denvpre
 postscript: .denvpost
 `
-_default_denvignore = `.bash_history
+	_default_denvignore = `.bash_history
 .gnupg
 .npm
 .nvm
@@ -23,5 +23,5 @@ _default_denvignore = `.bash_history
 .ssh
 .viminfo
 `
-Version = "v0.0.6-a"
+	Version = "v0.0.6-a"
 )

@@ -1,4 +1,4 @@
-package api
+package denv
 
 import (
 	"io/ioutil"

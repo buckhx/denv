@@ -1,4 +1,4 @@
-package api
+package denv
 
 import (
 	"testing"
@@ -7,6 +7,7 @@ import (
 func TestFreeze(t *testing.T) {
 	//Push("https://github.com/buckhx/test-denv", "master")
 }
+
 /*
 func TestFreeze(t *testing.T) {
 	d := NewDenv("test-freeze")
