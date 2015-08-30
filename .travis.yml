@@ -2,6 +2,7 @@ language: go
 go:
   - release
 script:
+  - go generate
   - go test -v ./...
   - go build -x -v
 deploy:
