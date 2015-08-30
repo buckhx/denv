@@ -43,6 +43,8 @@ func NewDenv(name string) *Denv {
 	return d
 }
 
+// Copy the contents of the denv definition into the users home dir
+// Also execute the PreScripts, before any copy is made
 func (d *Denv) Enter() {
 	included, _, scripts := d.Files()
 	for _, script := range scripts {
@@ -59,6 +61,7 @@ func (d *Denv) Enter() {
 	}
 }
 
+// Run the PostScripts
 func (d *Denv) Exit() {
 	_, _, scripts := d.Files()
 	for _, script := range scripts {
@@ -68,9 +71,9 @@ func (d *Denv) Exit() {
 	}
 }
 
-//TODO addd denv.AddFile(path)
+//TODO add denv.AddFile(path)
 // Paths of files in the Denv Definition
-// Tells you which paths are currently included and ignored
+// Tells you which paths are currently included and ignored and which are scripts
 func (d *Denv) Files() (included []string, ignored []string, scripts []string) {
 	return d.MatchedFiles(d.Path)
 }
@@ -97,6 +100,7 @@ func (d *Denv) IsIgnored(path string) bool {
 	return false
 }
 
+// Check is the path is a script of this denv
 func (d *Denv) IsScript(path string) bool {
 	if strings.HasSuffix(path, Settings.PreScript) || strings.HasSuffix(path, Settings.PostScript) {
 		return true
@@ -105,6 +109,7 @@ func (d *Denv) IsScript(path string) bool {
 	}
 }
 
+// Check if this file is able to a be used by this denv
 func (d *Denv) IsDenvFile(path string) bool {
 	return !d.IsIgnored(path)
 }
@@ -128,7 +133,7 @@ func (d *Denv) LoadIgnore() {
 
 // Given an arbitrary path, return which files would be included
 // and which would be ignored. If path contains a folder, it will not
-// be recursed into.
+// be recursed into. Returns the included, ignored and script files
 func (d *Denv) MatchedFiles(root string) (included []string, ignored []string, scripts []string) {
 	err := filepath.Walk(root, func(path string, file os.FileInfo, err error) error {
 		//chpath is created for when testing denvfiles against another dir
@@ -157,6 +162,7 @@ func (d *Denv) Name() string {
 	return pathlib.Base(d.Path)
 }
 
+// Explicitly set this denvs denvignore to the given path
 func (d *Denv) SetDenvIgnore(path string) {
 	// TODO: assert is a .denvignore
 	if path != d.ignoreFile() {
@@ -197,6 +203,7 @@ func (d *Denv) cleanGitSubmodules() {
 	check(err)
 }
 
+// Prepend the given path with his denvs path
 func (d *Denv) expandPath(path string) string {
 	return pathlib.Join(d.Path, path)
 }
@@ -211,6 +218,7 @@ func (d *Denv) remove() error {
 	return os.RemoveAll(d.Path)
 }
 
+// Exec an RPC operation
 func operation(command string, args ...string) (string, string, error) {
 	var stderr, stdout bytes.Buffer
 	cmd := exec.Command(command, args...)
@@ -220,6 +228,7 @@ func operation(command string, args ...string) (string, string, error) {
 	return stdout.String(), stderr.String(), err
 }
 
+// Take a path and execute it as a script. Stderr/Stdout both printed
 func run_script(script string) {
 	fmt.Printf("Executing %s...\n", script)
 	stdout, stderr, err := operation(".", script)

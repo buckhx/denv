@@ -1,3 +1,16 @@
+/*
+denvlib provides the mechanics for the denv client.
+The denv client handles the hidden files in the users home directory
+which are generally configurations for the users environment.
+
+A simple example use case is when doing Python and Go development on the same box.
+Python (PEP-8) wants 4 spaces for it's whereas Go likes actual tab characters.
+Being able to quickly switch between these by activating a denv solves this iise.
+
+Each denv manages a particular environment and can be activated/deactived.
+
+Denv definitions can be pushed/pulled from a remote git server
+*/
 package denvlib
 
 import (
@@ -9,6 +22,11 @@ import (
 	"strings"
 )
 
+//Activate a denv by replacing hidden files in the users home directoty with those in the denv definition.
+//as well as executing the scripts .denvpre in the denv definition
+//If one is not already active, the current state of the users home directory
+//will be stashed and restored whenever the user deactivates.
+//Returns the denv that was activated, nil if there was an error
 func Activate(env string) (*Denv, error) {
 	denv, err := GetDenv(env)
 	if err != nil {
@@ -25,7 +43,7 @@ func Activate(env string) (*Denv, error) {
 	return denv, nil
 }
 
-//Deactivate the current denv and restore it to the state
+//Deactivate the current denv and restore it to the state. Also executes the denvs .denvpost scripts.
 //before denv was active. Returns the name of the deactivated denv.
 //Empty string if there was no denv to deactivate
 func Deactivate() *Denv {
@@ -44,6 +62,8 @@ func Deactivate() *Denv {
 	return denv
 }
 
+//Gets a map of the denvs currently on the system
+//The returned map is meanted to be used like a set
 // TODO: Make a ls denv -> files
 func List() map[*Denv]bool {
 	//TODO Check is Settings.Denv.Path exists
@@ -62,6 +82,9 @@ func List() map[*Denv]bool {
 	return denvs
 }
 
+//Pull the contents of the remote/branch from the remote server onto the local system.
+//If there are conflicts, they will need to be managed manually in ~/.denv
+//This also makes denv scripts executable with chmod 744
 func Pull(remote string, branch string) string {
 	Info.Repository.SetRemote("denv", remote)
 	Info.Repository.Checkout("-b", branch)
@@ -76,6 +99,8 @@ func Pull(remote string, branch string) string {
 	return ""
 }
 
+//Push the current contents of ~/.denv to a remote git server at the specified branch.
+//If there are issues, they will need to be resolved manually with git @ ~/.denv
 func Push(remote string, branch string) string {
 	Info.Repository.SetRemote("denv", remote)
 	Info.Repository.Fetch("denv")
@@ -88,6 +113,8 @@ func Push(remote string, branch string) string {
 	return ""
 }
 
+//Creates copies of the hidden files in the users home directory and puts them in a new denv definition
+//in ~/.denv/name. The denv definition can be edited manually after. The default denvignore will be used.
 func Snapshot(name string) *Denv {
 	d, _ := GetDenv(name)
 	if d == nil {
@@ -108,10 +135,12 @@ func Snapshot(name string) *Denv {
 	return d
 }
 
+// Returns the currently active Denv or nil
 func Which() *Denv {
 	return Info.Current
 }
 
+// save the current user home to RestoreDenv
 func stash(denv *Denv) {
 	snap := NewDenv(Settings.RestoreDenv)
 	snap.SetDenvIgnore(denv.ignoreFile())
