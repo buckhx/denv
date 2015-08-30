@@ -11,8 +11,7 @@ you switch between your vim environments
 You can copy the contents of the scripts/install.py file and run it to 
 install denv into /usr/local/bin like so
 
-    ./scripts/install.py
-
+    python < <(curl -s -S -L https://raw.githubusercontent.com/buckhx/denv/master/scripts/install.py) /usr/local/bin
 
 Or do it manually by going to the releases page and download the denv artifact
 
