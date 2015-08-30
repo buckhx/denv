@@ -3,6 +3,7 @@ go:
   - release
 script:
   - go generate
+  - go run scripts/include.go
   - go test -v ./...
   - go build -x -v
 deploy:
