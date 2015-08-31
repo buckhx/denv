@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/buckhx/denv/api"
+	"github.com/buckhx/denv/denvlib"
 	"github.com/codegangsta/cli"
 )
 
@@ -18,7 +18,7 @@ func client(args []string) {
 	app := cli.NewApp()
 	app.Name = "denv"
 	app.Usage = "Switch up your dev environments"
-	app.Version = api.Version
+	app.Version = denvlib.Version
 	app.Commands = []cli.Command{
 		{
 			Name:        "activate",
@@ -28,11 +28,11 @@ func client(args []string) {
 			Before:      argsRequired,
 			Action: func(c *cli.Context) {
 				env := c.Args().First()
-				denv, err := api.Activate(env)
+				d, err := denvlib.Activate(env)
 				if err != nil {
 					fmt.Printf("%q does not exist", env)
 				}
-				fmt.Printf("Activated %s \n", denv.Name())
+				fmt.Printf("Activated %s \n", d.Name())
 			},
 		},
 		{
@@ -41,7 +41,7 @@ func client(args []string) {
 			Usage:       "Deactivate the current environment",
 			Description: "",
 			Action: func(c *cli.Context) {
-				undenv := api.Deactivate()
+				undenv := denvlib.Deactivate()
 				if undenv != nil {
 					fmt.Printf("Deactivated %s\n", undenv.Name())
 				} else {
@@ -55,8 +55,8 @@ func client(args []string) {
 			Usage:       "List the available environments",
 			Description: "List the available environments",
 			Action: func(c *cli.Context) {
-				for denv := range api.List() {
-					fmt.Println(denv.Name())
+				for d := range denvlib.List() {
+					fmt.Println(d.Name())
 				}
 			},
 		},
@@ -67,12 +67,12 @@ func client(args []string) {
 			Before:      argsRequired,
 			Action: func(c *cli.Context) {
 				remote := c.Args().First()
-				api.Pull(remote, c.String("branch"))
+				denvlib.Pull(remote, c.String("branch"))
 				fmt.Printf("Pulled from %s successfully\n", remote)
 			},
-			Flags: []cli.Flag {
-				cli.StringFlag {
-					Name: "branch",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "branch",
 					Value: "master",
 					Usage: "Branch to use from the remote",
 				},
@@ -85,12 +85,12 @@ func client(args []string) {
 			Before:      argsRequired,
 			Action: func(c *cli.Context) {
 				remote := c.Args().First()
-				api.Push(remote, c.String("branch"))
+				denvlib.Push(remote, c.String("branch"))
 				fmt.Printf("Pushed to %s successful\n", remote)
 			},
-			Flags: []cli.Flag {
-				cli.StringFlag {
-					Name: "branch",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "branch",
 					Value: "master",
 					Usage: "Branch to use from the remote",
 				},
@@ -104,17 +104,17 @@ func client(args []string) {
 			Before:      argsRequired,
 			Action: func(c *cli.Context) {
 				name := c.Args().First()
-				denv, _ := api.GetDenv(name)
-				if denv != nil && !c.Bool("force") {
+				d, _ := denvlib.GetDenv(name)
+				if d != nil && !c.Bool("force") {
 					fmt.Printf("Denv %q already exists\nOverwrite with denv s -f %s\n", name, name)
 				} else {
 					fmt.Println("Snapshotting...")
-					denv := api.Snapshot(name)
-					included, _, _ := denv.Files()
+					d := denvlib.Snapshot(name)
+					included, _, _ := d.Files()
 					for _, in := range included {
 						fmt.Printf("\t%s\n", in)
 					}
-					fmt.Printf("Created a snapshot for %q\n", denv.Name())
+					fmt.Printf("Created a snapshot for %q\n", d.Name())
 				}
 			},
 			Flags: []cli.Flag{
@@ -130,10 +130,10 @@ func client(args []string) {
 			Usage:       "Which denv is currently active",
 			Description: "Which environemnt is currently activated",
 			Action: func(c *cli.Context) {
-				denv := api.Which()
+				d := denvlib.Which()
 				// TODO maybe invert this logic?
-				if denv != nil {
-					fmt.Println(denv.Name())
+				if d != nil {
+					fmt.Println(d.Name())
 				} else {
 					fmt.Println("No denv is active")
 				}

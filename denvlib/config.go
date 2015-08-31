@@ -1,20 +1,20 @@
-package api
+package denvlib
 
 import (
-	pathlib "path"
 	"os/user"
+	pathlib "path"
 
 	"github.com/buckhx/pathutil"
 	"gopkg.in/yaml.v2"
 )
 
 type Config struct {
-	DenvHome   string
-	IgnoreFile string
-	InfoFile   string
-	RestoreDenv	string
-	PreScript string
-	PostScript string
+	DenvHome    string
+	IgnoreFile  string
+	InfoFile    string
+	RestoreDenv string
+	PreScript   string
+	PostScript  string
 }
 
 var Settings Config
@@ -29,7 +29,7 @@ func check(errs ...error) {
 }
 
 func UserHome() string {
-        usr, err := user.Current()
+	usr, err := user.Current()
 	check(err)
 	return usr.HomeDir
 }

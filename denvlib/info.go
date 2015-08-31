@@ -1,4 +1,4 @@
-package api
+package denvlib
 
 import (
 	"encoding/json"
@@ -9,6 +9,10 @@ import (
 	"github.com/buckhx/pathutil"
 )
 
+/*
+DenvInfo is a mechanism for handling state of the denv environment.
+It flushed it's contents to disk and reads from a given location
+*/
 type DenvInfo struct {
 	Current    *Denv
 	Path       string
