@@ -24,7 +24,7 @@ Let's start out by listing the current denvs
     
 You probably won't see anything, so why don't we download some denvs
 
-    dev pull https://github.com/buckhx/template-denv.git
+    denv pull https://github.com/buckhx/template-denv.git
     
 If you ls again, you should see some stuff. 
 Check out your ~/.vimrc and see what it looks like before activation. 
