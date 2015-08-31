@@ -221,8 +221,15 @@ func operation(command string, args ...string) (string, string, error) {
 }
 
 func run_script(script string) {
-	fmt.Printf("Executing %s...\n", script)
-	stdout, stderr, err := operation(".", script)
+	var stdout, stderr string
+	var err error
+	if strings.Contains(script, ".source.") {
+		fmt.Printf("Executing source %s...\n", script)
+		stdout, stderr, err = operation("source", script)
+	} else {
+		fmt.Printf("Executing %s...\n", script)
+		stdout, stderr, err = operation(script)
+	}
 	if err != nil {
 		fmt.Println(err)
 	}
