@@ -3,7 +3,7 @@ go:
   - release
 script:
   - go generate
-  - cat denvlib/resource.go
+  - cat denvlib/resources.go
   - go test -v ./...
   - go build -x -v
 deploy:
