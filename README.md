@@ -10,10 +10,15 @@ Installs a way to manage your development environments using the denv command
 Install denv into /usr/local/bin (assuming you have permissions to) like so
 
     curl -sSL https://raw.githubusercontent.com/buckhx/denv/master/scripts/install.py | python - /usr/local/bin
+    
+If you don't have permission at /usr/local/bin, try something like this where you extend your PATH
 
-Or do it manually by going to the releases page and download the denv artifact
+    BINDIR=~/.denv/.bin/
+    mkdir -p $BINDIR
+    export PATH=$PATH:$BINDIR
+    curl -sSL https://raw.githubusercontent.com/buckhx/denv/master/scripts/install.py | python - $BINDIR
 
-    https://github.com/buckhx/denv/releases/latest 
+Or do it manually by going to the releases page and download the denv artifact https://github.com/buckhx/denv/releases/latest 
 
 
 ## Usage
