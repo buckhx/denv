@@ -27,18 +27,12 @@ func main() {
 }
 
 func getVersion() string {
-	cmd := exec.Command("git", "describe", "--abbrev=0", "--tags")
+	cmd := exec.Command("git", "describe", "--always")
 	var out bytes.Buffer
 	cmd.Stdout = &out
-	err := cmd.Run()
+    err := cmd.Run()
 	if err != nil {
-		// No tag, we'll just call it the commit number
-		cmd = exec.Command("git", strings.Split("log --pretty=format:%h -n 1", " ")...)
-		cmd.Stdout = &out
-		err := cmd.Run()
-		if err != nil {
-			panic(err)
-		}
+        panic(err)
 	}
-	return strings.TrimSpace(out.String())
+    return strings.TrimSpace(out.String())
 }
