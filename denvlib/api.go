@@ -89,7 +89,7 @@ func Pull(remote string, branch string) string {
 	Info.Repository.SetRemote("denv", remote)
 	Info.Repository.Checkout("-b", branch)
 	Info.Repository.Checkout(branch)
-	Info.Repository.Pull("denv", branch)
+	Info.Repository.Fetch("denv", branch)
 	for d := range List() {
 		_, _, scripts := d.Files()
 		for _, script := range scripts {
