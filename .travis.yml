@@ -4,8 +4,6 @@ go:
 script:
   - go generate
   - cat denvlib/resources.go
-  - go run scripts/include.go
-  - cat denvlib/resources.go
   - go test -v ./...
   - go build -x -v
 deploy:

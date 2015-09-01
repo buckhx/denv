@@ -3,8 +3,6 @@
 
 Installs a way to manage your development environments using the denv command
 
-
-
 ## Installation
 
 Install denv into /usr/local/bin (assuming you have permissions to) like so
