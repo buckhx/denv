@@ -87,9 +87,10 @@ func List() map[*Denv]bool {
 //This also makes denv scripts executable with chmod 744
 func Pull(remote string, branch string) string {
 	Info.Repository.SetRemote("denv", remote)
+	Info.Repository.Fetch("denv")
 	Info.Repository.Checkout("-b", branch)
 	Info.Repository.Checkout(branch)
-	Info.Repository.Fetch("denv", branch)
+	Info.Repository.Pull("denv", branch)
 	for d := range List() {
 		_, _, scripts := d.Files()
 		for _, script := range scripts {
