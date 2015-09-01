@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!usr/bin/e/nv python
 
 '''
 This script has not dependencies besides a conntection to github in order to run.
@@ -6,7 +6,7 @@ Therefore it can be copied from the repo and ran on any system
 
 By default it will install to /usr/local/bin/denv. Change it by editing the INSTALL_LOCATION
 '''
-
+import request
 import json
 import os
 import sys

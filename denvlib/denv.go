@@ -230,15 +230,8 @@ func operation(command string, args ...string) (string, string, error) {
 
 // Take a path and execute it as a script. Stderr/Stdout both printed
 func run_script(script string) {
-	var stdout, stderr string
-	var err error
-	if strings.Contains(script, ".source.") {
-		fmt.Printf("Executing source %s...\n", script)
-		stdout, stderr, err = operation("source", script)
-	} else {
-		fmt.Printf("Executing %s...\n", script)
-		stdout, stderr, err = operation(script)
-	}
+	fmt.Printf("Executing %s...\n", script)
+	stdout, stderr, err := operation(script)
 	if err != nil {
 		fmt.Println(err)
 	}
