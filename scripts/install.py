@@ -6,7 +6,6 @@ Therefore it can be copied from the repo and ran on any system
 
 By default it will install to /usr/local/bin/denv. Change it by editing the INSTALL_LOCATION
 '''
-import request
 import json
 import os
 import sys
