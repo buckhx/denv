@@ -24,7 +24,7 @@ if arch == 'x86_64':
     arch = 'amd64'
 elif arch == 'i386':
     arch = '386'
-dist = "{0}-{1}".format(kernel.lower(), arch.lower())
+dist = "{0}_{1}".format(kernel.lower(), arch.lower())
 artifact = "{0}_{1}".format("denv", dist)
 
 content = urllib.urlopen('https://api.github.com/repos/buckhx/denv/releases/latest').read()
