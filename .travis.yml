@@ -5,7 +5,8 @@ script:
   - go generate
   - go test -v ./...
   - go get github.com/mitchellh/gox
-  - gox -os="linux darwin" -verbose
+  - gox -build-toolchain -os="linux darwin" -arch="386 amd64"
+  - gox -os="linux darwin" -arch="386 amd64" -verbose
 deploy:
   provider: releases
   api_key:
