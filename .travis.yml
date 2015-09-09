@@ -7,7 +7,7 @@ env:
 script:
   - go generate
   - go test -v ./...
-  - go build -x -v "denv_${GIMME_OS}_${GIMME_ARCH}"
+  - go build -x -v -o "denv_${GIMME_OS}_${GIMME_ARCH}"
 deploy:
   provider: releases
   api_key:
