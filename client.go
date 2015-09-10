@@ -85,7 +85,7 @@ func client(args []string) {
 			Before:      argsRequired,
 			Action: func(c *cli.Context) {
 				remote := c.Args().First()
-				denvlib.Push(remote, c.String("branch"))
+				denvlib.Push(remote, c.String("branch"), c.String("message"))
 				fmt.Printf("Pushed to %s successful\n", remote)
 			},
 			Flags: []cli.Flag{
@@ -93,6 +93,11 @@ func client(args []string) {
 					Name:  "branch",
 					Value: "master",
 					Usage: "Branch to use from the remote",
+				},
+				cli.StringFlag{
+					Name:  "message",
+					Value: "pushed",
+					Usage: "Commit message for your push",
 				},
 			},
 		},

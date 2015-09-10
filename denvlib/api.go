@@ -102,15 +102,17 @@ func Pull(remote string, branch string) string {
 
 //Push the current contents of ~/.denv to a remote git server at the specified branch.
 //If there are issues, they will need to be resolved manually with git @ ~/.denv
-func Push(remote string, branch string) string {
-	Info.Repository.SetRemote("denv", remote)
-	Info.Repository.Fetch("denv")
-	Info.Repository.Checkout("-b", branch)
+func Push(url, branch, message string) string {
+	remote := "denv"
+	ALL := "."
+	Info.Repository.SetRemote(remote, url)
+	Info.Repository.Fetch(remote)
+	Info.Repository.Checkout(remote, branch)
 	Info.Repository.Checkout(branch)
-	Info.Repository.Add(".")
-	Info.Repository.Commit("freeze")
-	Info.Repository.Pull("denv", branch)
-	Info.Repository.Push("denv", branch)
+	Info.Repository.Add(ALL)
+	Info.Repository.Commit(message)
+	Info.Repository.Pull(remote, branch)
+	Info.Repository.Push(remote, branch)
 	return ""
 }
 
