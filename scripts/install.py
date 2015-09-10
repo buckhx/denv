@@ -8,6 +8,7 @@ By default it will install to /usr/local/bin/denv. Change it by editing the INST
 '''
 import json
 import os
+import platform
 import sys
 import urllib
 
@@ -18,9 +19,14 @@ else:
     bindir = '/usr/local/bin/denv'
 print "Installing denv into {0}...".format(bindir)
 
+kernel, _, _, _, _, arch = platform.uname()
+if arch == 'x86_64':
+    arch = 'amd64'
+dist = "_".join(["denv", kernel.lower(), arch.lower().replace("_", "")])
+
 content = urllib.urlopen('https://api.github.com/repos/buckhx/denv/releases/latest').read()
 release = json.loads(content)
-link = [asset['browser_download_url'] for asset in release['assets'] if asset['name'] == 'denv'][0]
+link = [asset['browser_download_url'] for asset in release['assets'] if asset['name'] == dist][0]
 print "Downloading binary from " + link
 urllib.urlretrieve(link, bindir)
 os.chmod(bindir, 0755)
