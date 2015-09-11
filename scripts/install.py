@@ -22,7 +22,7 @@ print "Installing denv into {0}...".format(bindir)
 kernel, _, _, _, _, arch = platform.uname()
 if arch == 'x86_64':
     arch = 'amd64'
-elif arch == 'i386'
+elif arch == 'i386':
     arch = '386'
 dist = "{0}-{1}".format(kernel.lower(), arch.lower())
 artifact = "{0}_{1}".format("denv", dist)
