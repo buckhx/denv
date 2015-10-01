@@ -19,7 +19,7 @@ else:
     bindir = '/usr/local/bin/denv'
 print "Installing denv into {0}...".format(bindir)
 
-kernel, _, _, _, _, arch = platform.uname()
+kernel, _, _, _, arch, _ = platform.uname()
 if arch == 'x86_64':
     arch = 'amd64'
 elif arch == 'i386':
