@@ -61,7 +61,8 @@ func client(args []string) {
 			},
 		},
 		{
-			Name:        "pull",
+			Name:        "get",
+			Aliases:     []string{"pull"},
 			Usage:       "Pull the denvs from a remote server",
 			Description: "Pull from the remote devenv",
 			Before:      argsRequired,
@@ -79,7 +80,8 @@ func client(args []string) {
 			},
 		},
 		{
-			Name:        "push",
+			Name:        "put",
+			Aliases:     []string{"push"},
 			Usage:       "Push up your current denvs to a remote server",
 			Description: "Push your local devenv to the last server that was pulled",
 			Before:      argsRequired,
