@@ -1,7 +1,7 @@
 package denvlib
 
 import (
-	"os/user"
+    "os"
 	pathlib "path"
 
 	"github.com/buckhx/pathutil"
@@ -29,9 +29,7 @@ func check(errs ...error) {
 }
 
 func UserHome() string {
-	usr, err := user.Current()
-	check(err)
-	return usr.HomeDir
+    return os.Getenv("HOME")
 }
 
 func init() {
